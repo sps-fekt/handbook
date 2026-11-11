@@ -1,6 +1,6 @@
 ---
 title: Freshman handbook
-description: Everything you need to know when starting your studies at FEEC BUT. By Studenti pro studenty.
+description: Everything you need to know at the start of your studies at FEEC BUT. Put together for you by Studenti pro studenty.
 navigation: false
 ---
 
@@ -9,21 +9,21 @@ navigation: false
 [Freshman]{.title__item} [handbook]{.title__item}
 
 #description
-By Studenti pro studenty. Faculty of Electrical Engineering and Communication, Brno University of Technology. The English translation is in progress, until then most pages are in Czech.
+Put together for you by Studenti pro studenty. Faculty of Electrical Engineering and Communication, Brno University of Technology.
 
 #links
   :::button
   ---
-  to: /getting-started/welcome
+  to: /en/getting-started/welcome
   size: xl
   trailing-icon: i-lucide-arrow-right
   ---
-  Start reading (in Czech)
+  Start reading
   :::
 
   :::button
   ---
-  to: /faculty/discord
+  to: /en/faculty/discord
   size: xl
   color: neutral
   variant: solid
