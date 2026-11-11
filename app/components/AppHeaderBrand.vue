@@ -7,10 +7,9 @@ const localePath = useLocalePath()
 </script>
 
 <template>
-  <!-- Hidden on phones, below the sm breakpoint (640px); see AppHeader.vue. -->
   <NuxtLink
     :to="localePath('/')"
-    class="flex shrink-0 items-center gap-3 text-highlighted lg:mr-3 max-sm:hidden"
+    class="flex shrink-0 items-center gap-3 text-highlighted lg:mr-3"
   >
     <span
       role="img"

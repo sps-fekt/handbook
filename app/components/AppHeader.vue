@@ -9,18 +9,18 @@
        under the header is gone (docs/DocsAsideMobileBar.vue).
      The rest is the layer's header unchanged. -->
 <script setup lang="ts">
-const { header, footer, assistant } = useAppConfig()
+const { header, assistant } = useAppConfig()
 const content = useDocsContent()
 const assistantOpen = useAssistant()
 const sidebar = useFilteredNavigation()
 </script>
 
 <template>
-  <!-- Below the sm breakpoint (640px) the logo and site name are hidden (AppHeaderBrand.vue) and
+  <!-- Below the sm breakpoint (640px) the left side with the logo and site name is hidden and
        the buttons start on the left, with only the menu toggle on the right. -->
   <UHeader
     :to="prefixLink(header?.to || '/', content.routeBase)"
-    :ui="{ right: 'max-sm:flex-1 max-sm:justify-start' }"
+    :ui="{ left: 'max-sm:hidden', right: 'max-sm:flex-1 max-sm:justify-start' }"
   >
     <template #left>
       <AppHeaderBrand />
@@ -71,24 +71,12 @@ const sidebar = useFilteredNavigation()
     </template>
 
     <template #body>
-      <div class="flex flex-col justify-between gap-6 h-full">
-        <UContentNavigation
-          variant="link"
-          highlight
-          :collapsible="false"
-          :navigation="sidebar"
-        />
-        <div class="flex items-center gap-4">
-          <template v-if="footer?.links">
-            <UButton
-              v-for="(link, index) of footer?.links"
-              :key="index"
-              v-bind="{ color: 'neutral', variant: 'ghost', size: 'md', ...link }"
-              class="text-highlighted"
-            />
-          </template>
-        </div>
-      </div>
+      <UContentNavigation
+        variant="link"
+        highlight
+        :collapsible="false"
+        :navigation="sidebar"
+      />
     </template>
   </UHeader>
 </template>
