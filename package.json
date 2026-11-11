@@ -4,8 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "nuxt dev",
-    "build": "nuxt build",
-    "preview": "node .output/server/index.mjs"
+    "build": "lunaria build && nuxt build",
+    "preview": "node .output/server/index.mjs",
+    "lunaria": "lunaria build"
   },
   "dependencies": {
     "@nuxtjs/i18n": "^10.6.0",
@@ -15,5 +16,8 @@
   "allowScripts": {
     "esbuild": true,
     "vue-demi": false
+  },
+  "devDependencies": {
+    "@lunariajs/core": "^0.3.0"
   }
 }

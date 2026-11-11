@@ -1,7 +1,7 @@
 <!-- Language switch in the header (AppHeader.vue).
 
-     English pages live under /en with the Czech page's path, e.g.
-     /about/contributing ↔ /en/about/contributing. The switch
+     Each page lives under its language's prefix with the same path, e.g.
+     /cs/about/contributing ↔ /en/about/contributing. The switch
      opens the same page in the other language when it exists, otherwise that
      language's home page. It also adds the hreflang links between the two
      versions, which @nuxtjs/i18n doesn't for the layer's unlocalised routes. -->
@@ -16,7 +16,7 @@ const { locale: lang, t } = useI18n()
 const isEnglish = computed(() => lang.value === 'en')
 
 const paths = computed(() => {
-  const all = new Set<string>(['/', '/en'])
+  const all = new Set<string>(['/cs', '/en'])
   const walk = (items: NavigationItem[]) => items.forEach((item) => {
     all.add(item.path)
     if (item.children) walk(item.children)
@@ -27,13 +27,12 @@ const paths = computed(() => {
 
 // The page's path in the given language, or undefined if there's no such page.
 function counterpart(lang: 'cs' | 'en') {
-  const czech = isEnglish.value ? route.path.replace(/^\/en/, '') || '/' : route.path
-  const target = lang === 'en' ? (czech === '/' ? '/en' : `/en${czech}`) : czech
+  const target = route.path.replace(/^\/(cs|en)(?=\/|$)/, `/${lang}`)
   return paths.value.has(target) ? target : undefined
 }
 
 const languages = computed(() => [
-  { code: 'cs', name: 'Čeština', to: counterpart('cs') ?? '/', active: !isEnglish.value },
+  { code: 'cs', name: 'Čeština', to: counterpart('cs') ?? '/cs', active: !isEnglish.value },
   { code: 'en', name: 'English', to: counterpart('en') ?? '/en', active: isEnglish.value },
 ])
 

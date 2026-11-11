@@ -14,7 +14,7 @@ Připravili pro tebe Studenti pro studenty. Fakulta elektrotechniky a komunikač
 #links
   :::button
   ---
-  to: /getting-started/welcome
+  to: /cs/getting-started/welcome
   size: xl
   trailing-icon: i-lucide-arrow-right
   ---
@@ -23,7 +23,7 @@ Připravili pro tebe Studenti pro studenty. Fakulta elektrotechniky a komunikač
 
   :::button
   ---
-  to: /faculty/discord
+  to: /cs/faculty/discord
   size: xl
   color: neutral
   variant: solid
