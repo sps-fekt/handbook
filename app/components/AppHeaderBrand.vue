@@ -16,6 +16,7 @@ const localePath = useLocalePath()
       aria-label="Studenti pro studenty"
       class="size-6 shrink-0 bg-current [mask:url('/sps-logo.svg')_center/contain_no-repeat]"
     />
-    <span class="font-bold leading-none">{{ t('siteName') }}</span>
+    <!-- Below 400px the name doesn't fit beside the buttons: logo only (still read out). -->
+    <span class="font-bold leading-none max-[400px]:sr-only">{{ t('siteName') }}</span>
   </NuxtLink>
 </template>
