@@ -16,18 +16,19 @@ const version = computed(() => contentSha.value?.slice(0, 7) || commit)
 <template>
   <!-- Two groups, the translation status and the repository with its commit,
        split by a line; on phones they wrap as whole groups instead. -->
-  <UFooter :ui="{ right: 'flex-wrap gap-x-5 gap-y-3' }">
+  <UFooter :ui="{ left: 'mt-0', right: 'flex-wrap gap-x-5 gap-y-3' }">
     <template #left>
       <i18n-t
         keypath="madeWith"
         tag="span"
+        class="text-center lg:text-left"
         scope="global"
       >
         <template #owner>
           <ULink
             to="https://sps-fekt.cz"
             target="_blank"
-            class="font-medium hover:text-highlighted"
+            class="font-medium whitespace-nowrap hover:text-highlighted"
           >
             {{ footer?.owner }}
           </ULink>
