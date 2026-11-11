@@ -1,15 +1,15 @@
 <!-- Replaces the layer's header (comark-docs/app/components/AppHeader.vue):
      - no tab bar (AppHeaderCenter); the language switch (LanguageSwitch.vue)
-       goes last on the right instead, after search and history, styled and
-       spaced like them;
-     - phones get one bar: logo and title, history, language, search (an icon
-       button) and the menu, which lists the sidebar's pages. The layer's
-       second bar under the header is gone (docs/DocsAsideMobileBar.vue).
+       goes last on the right instead, after search, styled and spaced
+       like it;
+     - no version-history button;
+     - phones get one bar: logo and title, language, search (an icon button)
+       and the menu, which lists the sidebar's pages. The layer's second bar
+       under the header is gone (docs/DocsAsideMobileBar.vue).
      The rest is the layer's header unchanged. -->
 <script setup lang="ts">
 const { header, footer, assistant } = useAppConfig()
 const content = useDocsContent()
-const historyOpen = useVersionHistory()
 const assistantOpen = useAssistant()
 const sidebar = useFilteredNavigation()
 </script>
@@ -36,16 +36,6 @@ const sidebar = useFilteredNavigation()
         color="neutral"
         variant="outline"
         @click="assistantOpen = !assistantOpen"
-      />
-
-      <UButton
-        icon="i-lucide-history"
-        :color="content.mode === 'prod' ? 'neutral' : 'warning'"
-        :variant="content.mode === 'prod' ? 'outline' : 'subtle'"
-        aria-label="Version history"
-        :ui="{ leadingIcon: 'size-4' }"
-        class="p-2"
-        @click="historyOpen = !historyOpen"
       />
 
       <LanguageSwitch />
