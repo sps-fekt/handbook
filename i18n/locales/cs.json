@@ -26,9 +26,10 @@
     "title": "Stav překladu",
     "description": "Které stránky je potřeba přeložit nebo aktualizovat po změně v češtině.",
     "summary": "{done} hotovo, {outdated} zastaralé, {missing} chybí",
-    "page": "Stránka",
+    "page": "Zdrojová stránka",
     "changes": "Co se změnilo",
     "edit": "Upravit",
     "create": "Vytvořit"
-  }
+  },
+  "madeWith": "Vytvořeno s ♥︎ spolkem {owner}"
 }

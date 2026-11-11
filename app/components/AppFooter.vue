@@ -18,13 +18,21 @@ const version = computed(() => contentSha.value?.slice(0, 7) || commit)
        split by a line; on phones they wrap as whole groups instead. -->
   <UFooter :ui="{ right: 'flex-wrap gap-x-5 gap-y-3' }">
     <template #left>
-      <ULink
-        to="https://sps-fekt.cz"
-        target="_blank"
-        class="hover:text-highlighted"
+      <i18n-t
+        keypath="madeWith"
+        tag="span"
+        scope="global"
       >
-        {{ footer?.owner }}
-      </ULink>
+        <template #owner>
+          <ULink
+            to="https://sps-fekt.cz"
+            target="_blank"
+            class="font-medium hover:text-highlighted"
+          >
+            {{ footer?.owner }}
+          </ULink>
+        </template>
+      </i18n-t>
     </template>
 
     <template #right>

@@ -26,9 +26,10 @@
     "title": "Translation status",
     "description": "Which pages need translating, or updating after a change in Czech.",
     "summary": "{done} done, {outdated} outdated, {missing} missing",
-    "page": "Page",
+    "page": "Source page",
     "changes": "What changed",
     "edit": "Edit",
     "create": "Create"
-  }
+  },
+  "madeWith": "Made with ♥︎ by {owner}"
 }

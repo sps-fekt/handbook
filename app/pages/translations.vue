@@ -32,10 +32,8 @@ const languageName = (lang: string) => {
 const pagePath = (file: string) => file.replace(/^content/, '').replace(/\/\d+\./g, '/').replace(/(\/index)?\.md$/, '')
 
 const rows = computed(() => data.value.map(({ source, localizations }) => {
-  const own = localizations.find((loc) => loc.lang === locale.value && loc.status !== 'missing')
   return {
-    // The page in the reader's language, or the Czech one.
-    page: pagePath(own?.path ?? source.path),
+    page: pagePath(source.path),
     cells: Object.fromEntries(localizations.map((loc) => [loc.lang, {
       status: loc.status,
       // Outdated: what changed in Czech since the translation was last updated.

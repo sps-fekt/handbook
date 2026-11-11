@@ -14,7 +14,7 @@ export default defineAppConfig({
     ],
   },
   footer: {
-    owner: 'Studenti pro studenty, z. s.',
+    owner: 'Studenti pro studenty',
   },
   // Empty, so the table of contents uses Nuxt UI's title in the page's
   // language ("Na této stránce" / "On this page", app.vue's UApp locale).
