@@ -1,4 +1,16 @@
+import { execSync } from 'node:child_process'
 import { site } from './site'
+
+// Short hash of the commit the site is built from, shown in the footer when the
+// content's own commit isn't known (in development). Empty without git.
+function commitHash() {
+  try {
+    return execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim()
+  }
+  catch {
+    return ''
+  }
+}
 
 // Příručka prváka on the comark-docs layer (https://github.com/comarkdown/comark-docs).
 // Pages are rendered on the server at request time, no static generation:
@@ -14,6 +26,12 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
+
+  runtimeConfig: {
+    public: {
+      commit: commitHash(),
+    },
+  },
 
   // Czech under /cs (content/cs/), English under /en (content/en/); / redirects
   // to /cs. The layer's page routes stay unlocalised: its content lookup reads

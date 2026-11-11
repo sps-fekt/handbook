@@ -18,7 +18,6 @@ export default defineAppConfig({
     links: [
       // Nuxt UI adds the language prefix: /cs/translations or /en/translations.
       { 'icon': 'i-lucide-list-checks', 'to': '/translations', 'aria-label': 'Stav překladu' },
-      { 'icon': 'i-simple-icons-github', 'to': 'https://github.com/sps-fekt/handbook', 'target': '_blank', 'aria-label': 'GitHub' },
     ],
   },
   // Empty, so the table of contents uses Nuxt UI's title in the page's
