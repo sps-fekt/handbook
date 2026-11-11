@@ -1,9 +1,10 @@
 <!-- Replaces the layer's footer, which links its own brand assets page. On the
-     right: the footer links, the repository and the version shown, linked to
+     right: the translation status, the repository and the version shown, linked to
      its commit. That's the content's commit, which the layer looks up on GitHub
      (app.vue), or else the commit the site was built from (nuxt.config.ts). -->
 <script setup lang="ts">
 const { footer, github } = useAppConfig()
+const { t } = useI18n()
 const { commit } = useRuntimeConfig().public
 const contentSha = inject<Ref<string | null | undefined>>('sha', ref(null))
 
@@ -13,7 +14,8 @@ const version = computed(() => contentSha.value?.slice(0, 7) || commit)
 </script>
 
 <template>
-  <UFooter>
+  <!-- On phones the items wrap as whole items, not mid-name. -->
+  <UFooter :ui="{ right: 'flex-wrap gap-x-3 gap-y-2' }">
     <template #left>
       <ULink
         to="https://sps-fekt.cz"
@@ -25,12 +27,17 @@ const version = computed(() => contentSha.value?.slice(0, 7) || commit)
     </template>
 
     <template #right>
-      <UButton
-        v-for="(link, index) of footer?.links ?? []"
-        :key="index"
-        v-bind="{ color: 'neutral', variant: 'ghost', size: 'sm', ...link }"
-        class="text-highlighted"
-      />
+      <!-- Nuxt UI adds the language prefix: /cs/translations or /en/translations. -->
+      <ULink
+        to="/translations"
+        class="flex items-center gap-2 text-sm text-muted hover:text-highlighted"
+      >
+        <UIcon
+          name="i-lucide-list-checks"
+          class="size-4 shrink-0"
+        />
+        <span class="leading-none whitespace-nowrap">{{ t('translations.title') }}</span>
+      </ULink>
       <ULink
         :to="repoUrl"
         target="_blank"
@@ -40,7 +47,7 @@ const version = computed(() => contentSha.value?.slice(0, 7) || commit)
           name="i-simple-icons-github"
           class="size-4 shrink-0"
         />
-        <span class="leading-none">{{ repoName }}</span>
+        <span class="leading-none whitespace-nowrap">{{ repoName }}</span>
       </ULink>
       <ULink
         v-if="version"
