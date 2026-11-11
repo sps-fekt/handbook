@@ -80,5 +80,11 @@ The workflow's SSH key can only start the deploy. To set it up:
 
    When the token expires, replace it (`podman secret rm`, then create it again) and restart the site: `systemctl --user restart handbook.service`.
 
-2. Check `config/handbook.env` (site URL, repository).
-3. Run `~/repo/deploy/deploy.sh --install`.
+2. Create a random secret that signs the link preview images:
+
+   ```bash
+   openssl rand -hex 32 | tr -d '\n' | podman secret create handbook-app-secret -
+   ```
+
+3. Check `config/handbook.env` (site URL, repository).
+4. Run `~/repo/deploy/deploy.sh --install`.
