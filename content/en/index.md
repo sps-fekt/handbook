@@ -14,7 +14,7 @@ By Studenti pro studenty. Faculty of Electrical Engineering and Communication, B
 #links
   :::button
   ---
-  to: /zaciname/vitej
+  to: /getting-started/welcome
   size: xl
   trailing-icon: i-lucide-arrow-right
   ---
@@ -23,7 +23,7 @@ By Studenti pro studenty. Faculty of Electrical Engineering and Communication, B
 
   :::button
   ---
-  to: /fakulta/discord
+  to: /faculty/discord
   size: xl
   color: neutral
   variant: solid

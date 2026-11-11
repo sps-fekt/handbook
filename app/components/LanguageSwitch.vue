@@ -1,7 +1,7 @@
 <!-- Language switch in the header (AppHeader.vue).
 
      English pages live under /en with the Czech page's path, e.g.
-     /o-prirucce/jak-prispivat ↔ /en/o-prirucce/jak-prispivat. The switch
+     /about/contributing ↔ /en/about/contributing. The switch
      opens the same page in the other language when it exists, otherwise that
      language's home page. -->
 <script setup lang="ts">
