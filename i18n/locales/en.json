@@ -16,5 +16,10 @@
   "openIn": "Open in {name}",
   "aiPrompt": "Read {url} so I can ask questions about it.",
   "notFoundTitle": "Page not found",
-  "notFoundDescription": "We are sorry but this page could not be found."
+  "notFoundDescription": "We are sorry but this page could not be found.",
+  "translationStatus": {
+    "done": "Done",
+    "outdated": "Outdated",
+    "missing": "Missing"
+  }
 }

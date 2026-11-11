@@ -16,5 +16,10 @@
   "openIn": "Otevřít v {name}",
   "aiPrompt": "Přečti si {url}, ať se tě na ni můžu ptát.",
   "notFoundTitle": "Stránka nenalezena",
-  "notFoundDescription": "Omlouváme se, ale tuto stránku se nepodařilo najít."
+  "notFoundDescription": "Omlouváme se, ale tuto stránku se nepodařilo najít.",
+  "translationStatus": {
+    "done": "Hotovo",
+    "outdated": "Zastaralé",
+    "missing": "Chybí"
+  }
 }

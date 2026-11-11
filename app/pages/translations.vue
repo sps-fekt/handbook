@@ -15,11 +15,8 @@ const repo = 'https://github.com/sps-fekt/handbook'
 const files = import.meta.glob<Entry[]>('../../.lunaria/status.json', { eager: true, import: 'default' })
 const data = computed(() => Object.values(files)[0] ?? [])
 
-const statuses = {
-  done: { label: 'Hotovo', color: 'success' },
-  outdated: { label: 'Zastaralé', color: 'warning' },
-  missing: { label: 'Chybí', color: 'error' },
-} as const
+const { t } = useI18n()
+const colors = { done: 'success', outdated: 'warning', missing: 'error' } as const
 
 // content/cs/1.getting-started/1.welcome.md → /cs/getting-started/welcome
 const pagePath = (file: string) => file.replace(/^content/, '').replace(/\/\d+\./g, '/').replace(/(\/index)?\.md$/, '')
@@ -54,7 +51,7 @@ useSeoMeta({ title: 'Stav překladu', robots: 'noindex' })
       <UPageBody>
         <div class="flex flex-col gap-2">
           <p class="text-sm text-muted">
-            English: {{ summary.done }} hotovo, {{ summary.outdated }} zastaralé, {{ summary.missing }} chybí
+            English: {{ summary.done }} {{ t('translationStatus.done').toLowerCase() }}, {{ summary.outdated }} {{ t('translationStatus.outdated').toLowerCase() }}, {{ summary.missing }} {{ t('translationStatus.missing').toLowerCase() }}
           </p>
           <UProgress
             :model-value="summary.done"
@@ -80,8 +77,8 @@ useSeoMeta({ title: 'Stav překladu', robots: 'noindex' })
           </template>
           <template #status-cell="{ row }">
             <UBadge
-              :label="statuses[row.original.status].label"
-              :color="statuses[row.original.status].color"
+              :label="t(`translationStatus.${row.original.status}`)"
+              :color="colors[row.original.status]"
               variant="subtle"
             />
           </template>
