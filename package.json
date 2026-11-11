@@ -18,6 +18,7 @@
     "vue-demi": false
   },
   "devDependencies": {
-    "@lunariajs/core": "^0.3.0"
+    "@lunariajs/core": "^0.3.0",
+    "@vite-pwa/nuxt": "^1.1.1"
   }
 }

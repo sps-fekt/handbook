@@ -38,7 +38,7 @@ export default defineNuxtConfig({
   // (server/middleware/language.ts). Czech stays the source of the content.
   // The layer's page routes stay unlocalised: its content lookup reads the
   // whole path, language prefix included.
-  modules: ['@nuxtjs/i18n'],
+  modules: ['@nuxtjs/i18n', '@vite-pwa/nuxt'],
   i18n: {
     baseUrl: 'https://prirucka.sps-fekt.cz',
     defaultLocale: 'en',
@@ -52,6 +52,38 @@ export default defineNuxtConfig({
     // Done by server/middleware/language.ts instead: the layer owns /, so the
     // module's detection never runs there.
     detectBrowserLanguage: false,
+  },
+
+  // Installable as an app, and readable offline. The site's files are saved
+  // when the service worker installs; pages and their content are loaded from
+  // the network, with the last copy kept for offline use.
+  // app/plugins/offline.client.ts saves every page of the language up front.
+  pwa: {
+    registerType: 'autoUpdate',
+    manifest: {
+      name: site.name,
+      short_name: site.shortName,
+      description: site.description,
+      start_url: '/',
+      display: 'standalone',
+      background_color: '#ffffff',
+      theme_color: site.color,
+      icons: [
+        { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+        { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+        { src: '/icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      ],
+    },
+    workbox: {
+      // Pages are rendered on the server, there's no app shell to fall back to.
+      navigateFallback: null,
+      globPatterns: ['**/*.{js,css,png,svg,ico,webp,woff2}'],
+      runtimeCaching: [{
+        urlPattern: ({ sameOrigin, url }) => sameOrigin && !url.pathname.startsWith('/api/assistant'),
+        handler: 'NetworkFirst',
+        options: { cacheName: 'pages', networkTimeoutSeconds: 5, matchOptions: { ignoreVary: true } },
+      }],
+    },
   },
 
   llms: {

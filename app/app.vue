@@ -78,6 +78,7 @@ defineShortcuts({
 
 <template>
   <UApp :locale="uiLocale">
+    <NuxtPwaManifest />
     <NuxtLoadingIndicator
       :height="2"
       color="var(--ui-text-highlighted)"
