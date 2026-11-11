@@ -34,8 +34,10 @@ export default defineNuxtConfig({
   },
 
   // Czech under /cs (content/cs/), English under /en (content/en/); English is
-  // the default, / redirects to /en. Czech stays the source of the content. The layer's page routes stay unlocalised: its content lookup reads
-  // the whole path, language prefix included.
+  // the default; / and /translations redirect to the visitor's language
+  // (server/middleware/language.ts). Czech stays the source of the content.
+  // The layer's page routes stay unlocalised: its content lookup reads the
+  // whole path, language prefix included.
   modules: ['@nuxtjs/i18n'],
   i18n: {
     baseUrl: 'https://prirucka.sps-fekt.cz',
@@ -47,11 +49,9 @@ export default defineNuxtConfig({
     ],
     customRoutes: 'config',
     pages: { 'index': false, 'slug': false, 'lang': false },
+    // Done by server/middleware/language.ts instead: the layer owns /, so the
+    // module's detection never runs there.
     detectBrowserLanguage: false,
-  },
-  routeRules: {
-    '/': { redirect: '/en' },
-    '/translations': { redirect: '/en/translations' },
   },
 
   llms: {

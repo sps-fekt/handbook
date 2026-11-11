@@ -13,6 +13,8 @@ const site = useSiteConfig()
 const navigation = inject<Ref<NavigationItem[]>>('navigation', ref([]))
 
 const { locale: lang, t } = useI18n()
+// The picked language, so / opens it next time (server/middleware/language.ts).
+const saved = useCookie('lang', { maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
 const isEnglish = computed(() => lang.value === 'en')
 
 const paths = computed(() => {
@@ -70,6 +72,7 @@ useHead({
           <NuxtLink
             :to="language.to"
             :lang="language.code"
+            @click="saved = language.code"
             class="flex items-center justify-between gap-3 rounded-md px-2 py-1.5 text-sm hover:bg-elevated"
             :class="language.active ? 'text-highlighted font-medium' : 'text-muted'"
           >
