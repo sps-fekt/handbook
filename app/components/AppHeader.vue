@@ -48,6 +48,13 @@ const sidebar = useFilteredNavigation()
       />
 
       <LanguageSwitch />
+
+      <UColorModeButton
+        color="neutral"
+        variant="outline"
+        :ui="{ leadingIcon: 'size-4' }"
+        class="p-2"
+      />
     </template>
 
     <template #toggle="{ open, toggle }">
@@ -74,10 +81,6 @@ const sidebar = useFilteredNavigation()
               class="text-highlighted"
             />
           </template>
-          <UColorModeButton
-            size="md"
-            class="text-highlighted"
-          />
         </div>
       </div>
     </template>

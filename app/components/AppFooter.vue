@@ -22,10 +22,6 @@ const { footer } = useAppConfig()
         v-bind="{ color: 'neutral', variant: 'ghost', size: 'sm', ...link }"
         class="text-highlighted"
       />
-      <UColorModeButton
-        size="sm"
-        class="text-highlighted"
-      />
     </template>
   </UFooter>
 </template>
