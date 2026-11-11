@@ -57,7 +57,7 @@ export default defineNuxtConfig({
   // Installable as an app, and readable offline. The site's files are saved
   // when the service worker installs; pages and their content are loaded from
   // the network, with the last copy kept for offline use.
-  // app/plugins/offline.client.ts saves every page of the language up front.
+  // app/plugins/offline.client.ts saves every page up front.
   pwa: {
     registerType: 'autoUpdate',
     manifest: {

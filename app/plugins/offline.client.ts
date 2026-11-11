@@ -1,16 +1,14 @@
 import type { NavigationItem } from 'comark-content'
 
-// Saves the reader's language for offline use: once the service worker
-// (nuxt.config.ts, pwa) controls the page, every page and its content are
-// fetched once, which puts them in its cache. Again after each new build.
-export default defineNuxtPlugin((nuxtApp) => {
+// Saves the handbook, both languages, for offline use: once the service
+// worker (nuxt.config.ts, pwa) controls the page, every page and its content
+// are fetched once, which puts them in its cache. Again after each new build.
+export default defineNuxtPlugin(() => {
   if (!('serviceWorker' in navigator)) return
   const { commit } = useRuntimeConfig().public
 
   onNuxtReady(async () => {
-    const lang = (nuxtApp.$i18n as { locale: Ref<string> }).locale.value
-    const saved = `${commit}:${lang}`
-    if (localStorage.getItem('offline') === saved) return
+    if (localStorage.getItem('offline') === commit) return
 
     await navigator.serviceWorker.ready
     if (!navigator.serviceWorker.controller) {
@@ -23,10 +21,10 @@ export default defineNuxtPlugin((nuxtApp) => {
       paths.push(item.path)
       if (item.children) walk(item.children)
     })
-    walk(navigation.filter((item) => item.path === `/${lang}`))
+    walk(navigation)
 
     // The page, for opening it directly, and its content, for moving to it from another page.
     await Promise.all(paths.flatMap((path) => [fetch(path), fetch(`/api/content/get${path}`)]))
-    localStorage.setItem('offline', saved)
+    localStorage.setItem('offline', commit)
   })
 })
