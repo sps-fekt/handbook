@@ -6,7 +6,7 @@ navigation: false
 
 ::landing-hero{.hero-cover}
 #title
-[Freshman]{.title__item} [handbook]{.title__item}
+Freshman handbook
 
 #description
 Put together for you by Studenti pro studenty. Faculty of Electrical Engineering and Communication, Brno University of Technology.

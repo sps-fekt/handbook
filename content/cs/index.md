@@ -6,7 +6,7 @@ navigation: false
 
 ::landing-hero{.hero-cover}
 #title
-[Příručka]{.title__item} [prváka]{.title__item}
+Příručka prváka
 
 #description
 Připravili pro tebe Studenti pro studenty. Fakulta elektrotechniky a komunikačních technologií, Vysoké učení technické v Brně.
