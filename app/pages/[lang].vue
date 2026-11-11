@@ -1,7 +1,8 @@
 <!-- The homepage of each language, /cs and /en. The layer renders a landing
-     page only at / (its pages/index.vue, which nuxt.config.ts redirects to
-     /en); this renders content/<lang>/index.md the same way, with the same
-     landing components (::landing-hero and the rest). -->
+     page only at / (its pages/index.vue, which server/middleware/language.ts
+     redirects to the visitor's language); this renders content/<lang>/index.md
+     the same way, with the same landing components (::landing-hero and the
+     rest). -->
 <script setup lang="ts">
 definePageMeta({ path: '/:lang(cs|en)' })
 

@@ -6,7 +6,8 @@
      - search, language, menu in this order on every width (on phones the
        search is an icon button);
      - phones get one bar: logo and title, search, language and the menu, which lists the sidebar's pages. The layer's second bar
-       under the header is gone (docs/DocsAsideMobileBar.vue).
+       under the header is gone (docs/DocsAsideMobileBar.vue). The menu
+       button is outlined like the other header buttons.
      The rest is the layer's header unchanged. -->
 <script setup lang="ts">
 const { header, assistant } = useAppConfig()
@@ -20,6 +21,7 @@ const sidebar = useFilteredNavigation()
        the buttons start on the left, with only the menu toggle on the right. -->
   <UHeader
     :to="prefixLink(header?.to || '/', content.routeBase)"
+    :toggle="{ variant: 'outline', class: 'p-2 max-sm:ms-auto', ui: { leadingIcon: 'size-4' } }"
     :ui="{ left: 'max-sm:hidden', right: 'max-sm:flex-1 max-sm:justify-start' }"
   >
     <template #left>
@@ -59,14 +61,6 @@ const sidebar = useFilteredNavigation()
         variant="outline"
         :ui="{ leadingIcon: 'size-4' }"
         class="p-2"
-      />
-    </template>
-
-    <template #toggle="{ open, toggle }">
-      <IconMenuToggle
-        :open="open"
-        class="max-sm:ms-auto"
-        @click="toggle"
       />
     </template>
 
