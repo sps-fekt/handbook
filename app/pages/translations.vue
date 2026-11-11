@@ -1,12 +1,15 @@
 <!-- Translation status at /cs/translations and /en/translations, from the data Lunaria writes to
-     .lunaria/status.json (lunaria.config.ts) when the site is built:
-     for each Czech page, whether its English version is done, outdated (the
-     Czech page changed since) or missing, with links to fix it on GitHub. -->
+     .lunaria/status.json (lunaria.config.ts) when the site is built. As in
+     Lunaria's own dashboard: progress per language, then a row per Czech page
+     with a column per language saying whether its translation is done,
+     outdated (the Czech page changed since) or missing, with links to fix it
+     on GitHub. A language added in lunaria.config.ts gets its own column. -->
 <script setup lang="ts">
 interface Commit { hash: string, date: string, message: string }
+type Status = 'done' | 'outdated' | 'missing'
 interface Entry {
   source: { path: string, git: { latestTrackedCommit: Commit } }
-  localizations: { path: string, lang: string, status: 'done' | 'outdated' | 'missing', git?: { latestTrackedCommit: Commit } }[]
+  localizations: { path: string, lang: string, status: Status, git?: { latestTrackedCommit: Commit } }[]
 }
 
 const repo = 'https://github.com/sps-fekt/handbook'
@@ -18,25 +21,42 @@ const data = computed(() => Object.values(files)[0] ?? [])
 const { t, locale } = useI18n()
 const colors = { done: 'success', outdated: 'warning', missing: 'error' } as const
 
+const languages = computed(() => [...new Set(data.value.flatMap((entry) => entry.localizations.map((loc) => loc.lang)))])
+// The language's name in the reader's language, e.g. "Angličtina" / "English".
+const languageName = (lang: string) => {
+  const name = new Intl.DisplayNames([locale.value], { type: 'language' }).of(lang) ?? lang
+  return name.charAt(0).toLocaleUpperCase(locale.value) + name.slice(1)
+}
+
 // content/cs/1.getting-started/1.welcome.md → /cs/getting-started/welcome
 const pagePath = (file: string) => file.replace(/^content/, '').replace(/\/\d+\./g, '/').replace(/(\/index)?\.md$/, '')
 
-const rows = computed(() => data.value.flatMap(({ source, localizations }) => localizations.map((loc) => ({
-  // The page in the reader's language; a missing translation links the Czech one.
-  page: pagePath(locale.value === loc.lang && loc.status !== 'missing' ? loc.path : source.path),
-  lang: loc.lang,
-  status: loc.status,
-  // Outdated: what changed in Czech since the translation was last updated.
-  changes: loc.status === 'outdated' && loc.git
-    ? `${repo}/compare/${loc.git.latestTrackedCommit.hash}...${source.git.latestTrackedCommit.hash}`
-    : undefined,
-  fix: loc.status === 'missing' ? `${repo}/new/main?filename=${loc.path}` : `${repo}/edit/main/${loc.path}`,
-}))))
+const rows = computed(() => data.value.map(({ source, localizations }) => {
+  const own = localizations.find((loc) => loc.lang === locale.value && loc.status !== 'missing')
+  return {
+    // The page in the reader's language, or the Czech one.
+    page: pagePath(own?.path ?? source.path),
+    cells: Object.fromEntries(localizations.map((loc) => [loc.lang, {
+      status: loc.status,
+      // Outdated: what changed in Czech since the translation was last updated.
+      changes: loc.status === 'outdated' && loc.git
+        ? `${repo}/compare/${loc.git.latestTrackedCommit.hash}...${source.git.latestTrackedCommit.hash}`
+        : undefined,
+      fix: loc.status === 'missing' ? `${repo}/new/main?filename=${loc.path}` : `${repo}/edit/main/${loc.path}`,
+    }])),
+  }
+}))
 
-const summary = computed(() => {
-  const count = (status: string) => rows.value.filter((row) => row.status === status).length
-  return { total: rows.value.length, done: count('done'), outdated: count('outdated'), missing: count('missing') }
-})
+const summaries = computed(() => languages.value.map((lang) => {
+  const statuses = rows.value.map((row) => row.cells[lang]?.status)
+  const count = (status: Status) => statuses.filter((s) => s === status).length
+  return { lang, total: statuses.length, done: count('done'), outdated: count('outdated'), missing: count('missing') }
+}))
+
+const columns = computed(() => [
+  { accessorKey: 'page', header: t('translations.page') },
+  ...languages.value.map((lang) => ({ id: lang, header: languageName(lang) })),
+])
 
 useSeoMeta({ title: () => t('translations.title'), robots: 'noindex' })
 </script>
@@ -50,8 +70,13 @@ useSeoMeta({ title: () => t('translations.title'), robots: 'noindex' })
       />
 
       <UPageBody>
-        <div class="flex flex-col gap-2">
+        <div
+          v-for="summary in summaries"
+          :key="summary.lang"
+          class="flex flex-col gap-2"
+        >
           <p class="text-sm text-muted">
+            <span class="font-medium text-highlighted">{{ languageName(summary.lang) }}:</span>
             {{ t('translations.summary', summary) }}
           </p>
           <UProgress
@@ -62,11 +87,7 @@ useSeoMeta({ title: () => t('translations.title'), robots: 'noindex' })
 
         <UTable
           :data="rows"
-          :columns="[
-            { accessorKey: 'page', header: t('translations.page') },
-            { accessorKey: 'status', header: t('translations.status') },
-            { id: 'links', header: '' },
-          ]"
+          :columns="columns"
         >
           <template #page-cell="{ row }">
             <ULink
@@ -76,36 +97,47 @@ useSeoMeta({ title: () => t('translations.title'), robots: 'noindex' })
               {{ row.original.page }}
             </ULink>
           </template>
-          <template #status-cell="{ row }">
-            <UBadge
-              :label="t(`translationStatus.${row.original.status}`)"
-              :color="colors[row.original.status]"
-              variant="subtle"
-            />
-          </template>
-          <template #links-cell="{ row }">
-            <div class="flex justify-end gap-1">
+
+          <template
+            v-for="lang in languages"
+            :key="lang"
+            #[`${lang}-cell`]="{ row }"
+          >
+            <div
+              v-if="row.original.cells[lang]"
+              class="flex items-center gap-1.5"
+            >
+              <UBadge
+                :label="t(`translationStatus.${row.original.cells[lang].status}`)"
+                :color="colors[row.original.cells[lang].status]"
+                variant="subtle"
+                class="mr-1.5"
+              />
               <UTooltip
-                v-if="row.original.changes"
+                v-if="row.original.cells[lang].changes"
                 :text="t('translations.changes')"
               >
                 <UButton
-                  :to="row.original.changes"
+                  :to="row.original.cells[lang].changes"
                   target="_blank"
                   icon="i-lucide-file-diff"
                   color="neutral"
-                  variant="ghost"
+                  variant="outline"
+                  :ui="{ leadingIcon: 'size-4' }"
+                  class="p-2"
                   :aria-label="t('translations.changes')"
                 />
               </UTooltip>
-              <UTooltip :text="t(row.original.status === 'missing' ? 'translations.create' : 'translations.edit')">
+              <UTooltip :text="t(row.original.cells[lang].status === 'missing' ? 'translations.create' : 'translations.edit')">
                 <UButton
-                  :to="row.original.fix"
+                  :to="row.original.cells[lang].fix"
                   target="_blank"
-                  :icon="row.original.status === 'missing' ? 'i-lucide-file-plus' : 'i-lucide-pencil'"
+                  :icon="row.original.cells[lang].status === 'missing' ? 'i-lucide-file-plus' : 'i-lucide-pencil'"
                   color="neutral"
-                  variant="ghost"
-                  :aria-label="t(row.original.status === 'missing' ? 'translations.create' : 'translations.edit')"
+                  variant="outline"
+                  :ui="{ leadingIcon: 'size-4' }"
+                  class="p-2"
+                  :aria-label="t(row.original.cells[lang].status === 'missing' ? 'translations.create' : 'translations.edit')"
                 />
               </UTooltip>
             </div>

@@ -24,10 +24,9 @@
   },
   "translations": {
     "title": "Translation status",
-    "description": "Which pages need translating into English, or updating after a change in Czech.",
-    "summary": "English: {done} done, {outdated} outdated, {missing} missing",
+    "description": "Which pages need translating, or updating after a change in Czech.",
+    "summary": "{done} done, {outdated} outdated, {missing} missing",
     "page": "Page",
-    "status": "Status",
     "changes": "What changed",
     "edit": "Edit",
     "create": "Create"

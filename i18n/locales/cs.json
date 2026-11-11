@@ -24,10 +24,9 @@
   },
   "translations": {
     "title": "Stav překladu",
-    "description": "Které stránky je potřeba přeložit do angličtiny nebo aktualizovat po změně v češtině.",
-    "summary": "Angličtina: {done} hotovo, {outdated} zastaralé, {missing} chybí",
+    "description": "Které stránky je potřeba přeložit nebo aktualizovat po změně v češtině.",
+    "summary": "{done} hotovo, {outdated} zastaralé, {missing} chybí",
     "page": "Stránka",
-    "status": "Stav",
     "changes": "Co se změnilo",
     "edit": "Upravit",
     "create": "Vytvořit"
