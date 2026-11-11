@@ -53,6 +53,8 @@ const links = computed(() => [
     icon: 'i-simple-icons-markdown',
     label: t('openAsMarkdown'),
     to: mdPath.value,
+    // Not a localised page: without this, Nuxt UI's link adds the language prefix (/cs/raw/...).
+    external: true,
     target: '_blank',
     disabled: !isProd.value,
     class: !isProd.value ? disabledLinkClass : undefined,
