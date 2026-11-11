@@ -3,8 +3,9 @@
        goes last on the right instead, after search, styled and spaced
        like it;
      - no version-history button;
-     - phones get one bar: logo and title, language, search (an icon button)
-       and the menu, which lists the sidebar's pages. The layer's second bar
+     - search, language, menu in this order on every width (on phones the
+       search is an icon button);
+     - phones get one bar: logo and title, search, language and the menu, which lists the sidebar's pages. The layer's second bar
        under the header is gone (docs/DocsAsideMobileBar.vue).
      The rest is the layer's header unchanged. -->
 <script setup lang="ts">
@@ -30,6 +31,14 @@ const sidebar = useFilteredNavigation()
         :class="['text-muted font-normal hidden lg:inline-flex', assistantOpen ? 'p-2' : 'min-w-[150px]']"
       />
 
+      <UContentSearchButton
+        v-if="header?.search"
+        :collapsed="true"
+        variant="outline"
+        :ui="{ leadingIcon: 'size-4' }"
+        class="p-2 lg:hidden"
+      />
+
       <UButton
         v-if="assistant?.enabled"
         label="Ask AI"
@@ -39,14 +48,6 @@ const sidebar = useFilteredNavigation()
       />
 
       <LanguageSwitch />
-
-      <UContentSearchButton
-        v-if="header?.search"
-        :collapsed="true"
-        variant="outline"
-        :ui="{ leadingIcon: 'size-4' }"
-        class="p-2 lg:hidden"
-      />
     </template>
 
     <template #toggle="{ open, toggle }">
