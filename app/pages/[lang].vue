@@ -5,7 +5,7 @@
 <script setup lang="ts">
 definePageMeta({ path: '/:lang(cs|en)' })
 
-const landingComponents = byFileName(import.meta.glob('../../../node_modules/comark-docs/app/components/content/landing/*.{vue,ts}', { eager: true, import: 'default' }))
+const landingComponents = byFileName(import.meta.glob('../../node_modules/comark-docs/app/components/content/landing/*.{vue,ts}', { eager: true, import: 'default' }))
 
 const content = useDocsContent()
 const route = useRoute()

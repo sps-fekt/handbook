@@ -24,7 +24,6 @@ header[data-slot="root"] {
 /* The cover photo fills the page behind the translucent navbar, the hero
    and the footer. */
 body:has(.hero-cover) {
-  --hero-footer-height: 128px; /* footer stacks into two rows on small screens */
   background:
     /* extra shade for readability (see --hero-shade below) */
     linear-gradient(var(--hero-shade), var(--hero-shade)),
@@ -60,12 +59,17 @@ html:not(.dark) body:has(.hero-cover) {
   --hero-text: var(--ui-text-highlighted);
   --hero-text-shadow: 0 0 6px color-mix(in oklab, var(--ui-bg) 45%, transparent);
 }
-@media (min-width: 1024px) {
-  body:has(.hero-cover) {
-    --hero-footer-height: 52px;
-  }
+/* The page is one screen tall: header, the hero filling what's left, footer. */
+body:has(.hero-cover) div:has(> main) {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
 }
-body:has(.hero-cover) main {
+body:has(.hero-cover) main,
+body:has(.hero-cover) main > .comark-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   min-height: 0;
 }
 body:has(.hero-cover) footer {
@@ -76,8 +80,8 @@ body:has(.hero-cover) footer {
 .hero-cover {
   display: flex;
   align-items: center;
-  /* Fill the screen above the footer, starting behind the navbar. */
-  min-height: calc(100svh - var(--hero-footer-height));
+  /* Fill the space above the footer, starting behind the navbar. */
+  flex: 1;
   margin-top: calc(-1 * var(--ui-header-height));
   padding-top: var(--ui-header-height);
   color: var(--hero-text);
