@@ -1,6 +1,7 @@
 <!-- Replaces the layer's footer, which links its own brand assets page. -->
 <script setup lang="ts">
-const { footer } = useAppConfig()
+const appConfig = useAppConfig()
+const links = computed(() => appConfig.footer?.links ?? [])
 </script>
 
 <template>
@@ -11,13 +12,13 @@ const { footer } = useAppConfig()
         target="_blank"
         class="hover:text-highlighted"
       >
-        {{ footer?.owner }}
+        {{ appConfig.footer?.owner }}
       </ULink>
     </template>
 
     <template #right>
       <UButton
-        v-for="(link, index) of footer?.links ?? []"
+        v-for="(link, index) of links"
         :key="index"
         v-bind="{ color: 'neutral', variant: 'ghost', size: 'sm', ...link }"
         class="text-highlighted"

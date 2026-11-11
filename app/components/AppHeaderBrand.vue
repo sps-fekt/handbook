@@ -9,13 +9,13 @@ const localePath = useLocalePath()
 <template>
   <NuxtLink
     :to="localePath('/')"
-    class="flex shrink-0 items-center gap-3 text-highlighted lg:mr-3"
+    class="flex min-w-0 items-center gap-3 text-highlighted lg:mr-3"
   >
     <span
       role="img"
       aria-label="Studenti pro studenty"
       class="size-6 shrink-0 bg-current [mask:url('/sps-logo.svg')_center/contain_no-repeat]"
     />
-    <span class="font-bold leading-none">{{ t('siteName') }}</span>
+    <span class="font-bold leading-tight">{{ t('siteName') }}</span>
   </NuxtLink>
 </template>
