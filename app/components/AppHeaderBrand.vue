@@ -2,12 +2,12 @@
      next to the site title. The logo is drawn as a mask filled with the
      current color, so one SVG serves light and dark mode. -->
 <script setup lang="ts">
-const { header } = useAppConfig()
+const { lang, t } = useSiteLang()
 </script>
 
 <template>
   <NuxtLink
-    to="/"
+    :to="lang === 'en' ? '/en' : '/'"
     class="flex shrink-0 items-center gap-3 text-highlighted lg:mr-3"
   >
     <span
@@ -15,6 +15,6 @@ const { header } = useAppConfig()
       aria-label="Studenti pro studenty"
       class="size-6 shrink-0 bg-current [mask:url('/sps-logo.svg')_center/contain_no-repeat]"
     />
-    <span class="font-bold leading-none">{{ header?.title }}</span>
+    <span class="font-bold leading-none">{{ t('siteName') }}</span>
   </NuxtLink>
 </template>

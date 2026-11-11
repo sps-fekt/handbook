@@ -19,8 +19,10 @@ export default defineAppConfig({
       { 'icon': 'i-simple-icons-github', 'to': 'https://github.com/sps-fekt/handbook', 'target': '_blank', 'aria-label': 'GitHub' },
     ],
   },
+  // Empty, so the table of contents uses Nuxt UI's title in the page's
+  // language ("Na této stránce" / "On this page", app.vue's UApp locale).
   toc: {
-    title: 'Na této stránce',
+    title: '',
   },
   // The sidebar as in Docus (Nuxt UI's defaults plus Docus's icon size):
   // section titles bold with an icon, pages indented along a line, the

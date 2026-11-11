@@ -10,7 +10,8 @@ import type { NavigationItem } from 'comark-content'
 const route = useRoute()
 const navigation = inject<Ref<NavigationItem[]>>('navigation', ref([]))
 
-const isEnglish = computed(() => route.path === '/en' || route.path.startsWith('/en/'))
+const { lang, t } = useSiteLang()
+const isEnglish = computed(() => lang.value === 'en')
 
 const paths = computed(() => {
   const all = new Set<string>()
@@ -40,7 +41,7 @@ const languages = computed(() => [
       color="neutral"
       variant="outline"
       icon="i-lucide-languages"
-      :aria-label="isEnglish ? 'Language: English' : 'Jazyk: Čeština'"
+      :aria-label="t('language')"
       :ui="{ leadingIcon: 'size-4' }"
       class="p-2"
     />

@@ -6,6 +6,8 @@
 defineProps<{
   open: boolean
 }>()
+
+const { t } = useSiteLang()
 </script>
 
 <template>
@@ -14,7 +16,7 @@ defineProps<{
     variant="outline"
     class="lg:hidden p-2 cursor-pointer"
     square
-    :aria-label="open ? 'Zavřít menu' : 'Otevřít menu'"
+    :aria-label="open ? t('closeMenu') : t('openMenu')"
     :aria-expanded="open"
   >
     <svg

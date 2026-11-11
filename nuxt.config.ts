@@ -15,13 +15,19 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  // English pages: the SEO module sets <html lang>, og:locale and Schema.org
+  // from the site config's current locale (site.defaultLocale, cs, elsewhere).
+  routeRules: {
+    '/en': { site: { currentLocale: 'en' } },
+    '/en/**': { site: { currentLocale: 'en' } },
+  },
+
   llms: {
     domain: 'https://prirucka.sps-fekt.cz',
   },
 
   app: {
     head: {
-      htmlAttrs: { lang: 'cs' },
       meta: [{ name: 'theme-color', content: site.color }],
       link: [
         { rel: 'icon', href: '/favicon.ico', sizes: '32x32' },
