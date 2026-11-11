@@ -40,9 +40,11 @@ const languages = computed(() => [
   <UPopover :content="{ align: 'end' }">
     <UButton
       color="neutral"
-      variant="ghost"
+      variant="outline"
       icon="i-lucide-languages"
       :aria-label="isEnglish ? 'Language: English' : 'Jazyk: Čeština'"
+      :ui="{ leadingIcon: 'size-4' }"
+      class="p-2"
     />
 
     <template #content>

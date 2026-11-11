@@ -4,7 +4,9 @@ export default defineAppConfig({
   ui: {
     header: {
       slots: {
-        // The language switch (AppHeaderCenter.vue) sits on the right, next to search.
+        // The language switch (AppHeaderCenter.vue) sits on the right, next to
+        // search, the same gap-2 apart as the buttons there.
+        container: 'gap-2',
         center: 'flex-1 justify-end',
         right: 'lg:flex-none',
       },
