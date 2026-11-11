@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+# Deploys the handbook from GitHub. Run as the handbook user.
+#
+#   deploy.sh            pull the deploy branch and apply what changed (run on a push to
+#                        GitHub over SSH, and by the timer as a fallback; see README.md)
+#   deploy.sh --install  first-time setup: install units and Quadlets, build, start everything
+#   deploy.sh --rebuild  rebuild the image even if nothing changed (e.g. for Node security updates)
+#
+# What changed                          What happens
+# content/**, app files, package*.json  the image is rebuilt and the site restarted (the site
+#                                       reads pages from GitHub, but the translation status
+#                                       at /cs/translations is made at build time)
+# config/**                             the site is restarted (no rebuild)
+# handbook.quadlets                     the Quadlets are reinstalled and the site restarted
+# deploy/*.service|timer                the systemd units are reinstalled
+# *.md in the root, .github/**          nothing
+#
+# The image is labelled with the commit it was built from. If a build fails, the
+# site keeps running the previous image and the next run tries the build again.
+set -euo pipefail
+
+IMAGE=localhost/handbook:latest
+REVISION_LABEL=org.opencontainers.image.revision
+# Paths that never need a new image. Everything else does.
+NO_BUILD_RE='^(deploy/|config/|\.github/|handbook\.quadlets$|[^/]+\.md$)'
+
+# Everything runs inside main(), so bash has read the whole script
+# before "git merge" can replace this file.
+main() {
+    local repo branch install=0 rebuild=0 old new changed built build=0 restart=0
+    case "${1:-}" in
+        --install) install=1 ;;
+        --rebuild) rebuild=1 ;;
+        "") ;;
+        *) echo "Unknown option: $1" >&2; return 2 ;;
+    esac
+    repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+    branch="${DEPLOY_BRANCH:-main}"
+    cd "$repo"
+
+    # A manual run and the timer must not build at the same time.
+    exec 9>"${XDG_RUNTIME_DIR:-/tmp}/handbook-deploy.lock"
+    if ! flock -n 9; then
+        echo "Another deploy is running"
+        return 0
+    fi
+
+    git fetch --quiet origin "$branch"
+    old="$(git rev-parse HEAD)"
+    new="$(git rev-parse "origin/$branch")"
+    changed=""
+    if [[ "$old" != "$new" ]]; then
+        changed="$(git diff --name-only "$old" "$new")"
+        git checkout --quiet "$branch" 2>/dev/null || git checkout --quiet -b "$branch" "origin/$branch"
+        git merge --ff-only --quiet "origin/$branch"
+        echo "Updated ${old:0:7} -> ${new:0:7}:"
+        sed 's/^/  /' <<<"$changed"
+    fi
+
+    if [[ $install == 1 ]] || grep -qE '^deploy/.*\.(service|timer)$' <<<"$changed"; then
+        echo "Installing systemd units"
+        install -m 0644 -D -t "$HOME/.config/systemd/user" deploy/*.service deploy/*.timer
+        systemctl --user daemon-reload
+    fi
+    if [[ $install == 1 ]] || grep -qx 'handbook.quadlets' <<<"$changed"; then
+        echo "Installing Quadlets"
+        podman quadlet install --replace handbook.quadlets
+        restart=1
+    fi
+    if grep -q '^config/' <<<"$changed"; then
+        restart=1
+    fi
+
+    # Compare with the commit the running image was built from, not with the
+    # previous checkout, so a failed build is retried on the next run.
+    built="$(podman image inspect --format "{{index .Config.Labels \"$REVISION_LABEL\"}}" "$IMAGE" 2>/dev/null || true)"
+    if [[ $install == 1 || $rebuild == 1 ]] || ! git cat-file -e "${built:-none}^{commit}" 2>/dev/null; then
+        build=1
+    elif [[ "$built" != "$new" ]] && git diff --name-only "$built" "$new" | grep -qvE "$NO_BUILD_RE"; then
+        build=1
+    fi
+
+    if [[ $build == 1 ]]; then
+        echo "Building $IMAGE from ${new:0:7}"
+        podman build --pull=newer --label "$REVISION_LABEL=$new" -t "$IMAGE" .
+        podman image prune --force >/dev/null
+        restart=1
+    fi
+
+    if [[ $install == 1 ]]; then
+        systemctl --user enable --now handbook-deploy.timer
+        systemctl --user start handbook.service
+    elif [[ $restart == 1 ]]; then
+        echo "Restarting handbook.service"
+        systemctl --user restart --no-block handbook.service
+    fi
+}
+
+main "$@"
+exit

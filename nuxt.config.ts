@@ -27,6 +27,33 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  // Pages used to have Czech file names; old links keep working.
+  routeRules: {
+    '/cs/zaciname/vitej': { redirect: { to: '/cs/getting-started/welcome', statusCode: 301 } },
+    '/cs/zaciname/prvni-dny-studia': { redirect: { to: '/cs/getting-started/first-days', statusCode: 301 } },
+    '/cs/zaciname/co-to-vlastne-studuji': { redirect: { to: '/cs/getting-started/study-programmes', statusCode: 301 } },
+    '/cs/zaciname/odstartuj-s-nami-semestr': { redirect: { to: '/cs/getting-started/semester-kickoff', statusCode: 301 } },
+    '/cs/studium/system-vyuky': { redirect: { to: '/cs/studies/teaching', statusCode: 301 } },
+    '/cs/studium/informacni-system': { redirect: { to: '/cs/studies/information-system', statusCode: 301 } },
+    '/cs/studium/tipy-a-triky': { redirect: { to: '/cs/studies/tips-and-tricks', statusCode: 301 } },
+    '/cs/studium/stipendia': { redirect: { to: '/cs/studies/scholarships', statusCode: 301 } },
+    '/cs/studium/akademicke-funkce-a-tituly': { redirect: { to: '/cs/studies/academic-titles', statusCode: 301 } },
+    '/cs/studium/socialni-bezpeci': { redirect: { to: '/cs/studies/wellbeing', statusCode: 301 } },
+    '/cs/fakulta/dulezita-mista': { redirect: { to: '/cs/faculty/important-places', statusCode: 301 } },
+    '/cs/fakulta/studentske-organizace': { redirect: { to: '/cs/faculty/student-organizations', statusCode: 301 } },
+    '/cs/fakulta/discord': { redirect: { to: '/cs/faculty/discord', statusCode: 301 } },
+    '/cs/fakulta/sport': { redirect: { to: '/cs/faculty/sports', statusCode: 301 } },
+    '/cs/fakulta/fekt-merch': { redirect: { to: '/cs/faculty/merch', statusCode: 301 } },
+    '/cs/zivot-v-brne/kde-slozit-hlavu': { redirect: { to: '/cs/life-in-brno/accommodation', statusCode: 301 } },
+    '/cs/zivot-v-brne/jidlo-v-brne': { redirect: { to: '/cs/life-in-brno/food', statusCode: 301 } },
+    '/cs/zivot-v-brne/jak-funguje-brno': { redirect: { to: '/cs/life-in-brno/transport', statusCode: 301 } },
+    '/cs/zivot-v-brne/salinkarty': { redirect: { to: '/cs/life-in-brno/transit-passes', statusCode: 301 } },
+    '/cs/zivot-v-brne/pre-slovakov': { redirect: { to: '/cs/life-in-brno/for-slovaks', statusCode: 301 } },
+    '/cs/o-prirucce/tiraz': { redirect: { to: '/cs/about/credits', statusCode: 301 } },
+    '/cs/o-prirucce/jak-prispivat': { redirect: { to: '/cs/about/contributing', statusCode: 301 } },
+    '/en/o-prirucce/jak-prispivat': { redirect: { to: '/en/about/contributing', statusCode: 301 } },
+  },
+
   runtimeConfig: {
     public: {
       commit: commitHash(),

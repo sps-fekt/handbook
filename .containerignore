@@ -1,0 +1,11 @@
+# .git is NOT ignored: Lunaria needs the history to track translations.
+node_modules
+.output
+.nuxt
+.nitro
+.data
+.cache
+dist
+.env
+.env.*
+*.log

@@ -1,0 +1,30 @@
+name: Deploy
+
+# Tells the server to deploy right away instead of at its next check for
+# changes, every 10 minutes (deploy/handbook-deploy.timer). The server pulls
+# main and builds the image itself (deploy/deploy.sh); the SSH key can only
+# start that, see "Deploys" in README.md. If this fails, the timer deploys the
+# push anyway.
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  deploy:
+    # Skipped until the SSH key is set up (README.md); the timer deploys meanwhile.
+    if: vars.DEPLOY_SSH_TARGET != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start the deploy on the server
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ vars.DEPLOY_SSH_KNOWN_HOSTS }}
+          TARGET: ${{ vars.DEPLOY_SSH_TARGET }}
+        run: |
+          install -m 600 /dev/null ~/deploy_key
+          printf '%s\n' "$SSH_KEY" > ~/deploy_key
+          printf '%s\n' "$KNOWN_HOSTS" > ~/known_hosts
+          ssh -i ~/deploy_key -o UserKnownHostsFile=~/known_hosts -o IdentitiesOnly=yes -o BatchMode=yes "$TARGET"

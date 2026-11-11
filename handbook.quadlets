@@ -1,0 +1,36 @@
+# Freshman handbook (comark-docs), run as a rootless Podman Quadlet application.
+#
+# The image is built locally from this repository by deploy/deploy.sh.
+# Before installing, create the Podman secrets listed in README.md (Server setup).
+#
+# Install and start:  ~/repo/deploy/deploy.sh --install
+# Logs:               podman logs -f --tail 100 handbook
+# Remove:             podman quadlet rm handbook.container
+
+# FileName=handbook
+[Unit]
+Description=Freshman handbook (handbook)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+ContainerName=handbook
+Image=localhost/handbook:latest
+
+# Only the reverse proxy on the host talks to the site.
+PublishPort=127.0.0.1:8090:3000
+
+# Non-secret settings: site URL, GitHub repository.
+# The repository is cloned to ~/repo (/deploy/handbook/repo on the server).
+EnvironmentFile=%h/repo/config/handbook.env
+
+# Secret, created once with `podman secret create` (see README.md):
+# a read-only GitHub token, the site reads the pages from the repository.
+Secret=handbook-github-token,type=env,target=NUXT_DOCS_GITHUB_TOKEN
+
+[Service]
+Restart=always
+TimeoutStartSec=120
+
+[Install]
+WantedBy=default.target

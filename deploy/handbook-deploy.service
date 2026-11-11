@@ -1,0 +1,10 @@
+[Unit]
+Description=Deploy the handbook from GitHub
+
+[Service]
+Type=oneshot
+ExecStart=%h/repo/deploy/deploy.sh
+# Building the image takes a minute or two. Keep it from slowing down other apps.
+TimeoutStartSec=20min
+Nice=10
+IOSchedulingClass=idle
