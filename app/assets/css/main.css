@@ -29,6 +29,49 @@ body:has(.hero-cover) {
 html:not(.dark) body:has(.hero-cover) {
   --hero-shade: color-mix(in oklab, var(--ui-bg) 55%, transparent);
 }
+/* The page is at least as tall as the window: navbar, the hero filling what's
+   left, its content centered, and the footer at the bottom. */
+body:has(.hero-cover) :is(div:has(> main), main, main > .comark-content) {
+  display: flex;
+  flex-direction: column;
+}
+body:has(.hero-cover) div:has(> main) {
+  min-height: 100svh;
+}
+body:has(.hero-cover) :is(main, main > .comark-content, .hero-cover) {
+  flex: 1;
+  min-height: 0; /* instead of the layer's one screen for main */
+}
+.hero-cover {
+  display: flex;
+  align-items: center;
+}
+
+/* Frosted glass over the photo: the navbar, the footer and the title. */
+body:has(.hero-cover) :is(header[data-slot="root"], footer, .hero-cover h1) {
+  background: color-mix(in oklab, var(--ui-bg) 65%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+/* The title in capitals, in a box fitted around it; on phones one word per
+   line, the box as wide as the longest word. */
+.hero-cover h1 {
+  width: max-content;
+  max-width: 100%;
+  margin-inline: auto;
+  padding: 0.2em 0.5em;
+  border-radius: calc(var(--ui-radius) * 1.5);
+  font-size: 40px;
+  line-height: 1.4;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+@media (max-width: 639.98px) {
+  .hero-cover h1 {
+    width: min-content;
+  }
+}
 /* The subtitle is muted by default, too faint on the photo. */
 .hero-cover [data-slot="description"] {
   color: var(--ui-text-highlighted);
