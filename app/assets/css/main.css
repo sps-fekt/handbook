@@ -8,3 +8,122 @@
 :root.dark {
   --ui-primary: color-mix(in oklch, #003da5 62%, white);
 }
+
+/* ---- Homepage, as on the Docus version ---------------------------------- */
+
+/* Glass used by the navbar, the homepage footer and the homepage title. */
+:root {
+  --glass-bg: color-mix(in oklab, var(--ui-bg) 65%, transparent);
+}
+header[data-slot="root"] {
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* The cover photo fills the page behind the translucent navbar, the hero
+   and the footer. */
+body:has(.hero-cover) {
+  --hero-footer-height: 128px; /* footer stacks into two rows on small screens */
+  background:
+    /* extra shade for readability (see --hero-shade below) */
+    linear-gradient(var(--hero-shade), var(--hero-shade)),
+    /* brand blue sweeping in from the top left, fading out to the right */
+    linear-gradient(
+      135deg,
+      color-mix(in oklab, #003da5 75%, transparent) 0%,
+      color-mix(in oklab, #003da5 30%, transparent) 45%,
+      color-mix(in oklab, color-mix(in oklch, #003da5 42%, black) 55%, transparent) 100%
+    ),
+    /* darker at the top and bottom, behind the navbar and footer */
+    linear-gradient(
+      rgba(12, 22, 39, 0.45) 0%,
+      rgba(12, 22, 39, 0.1) 40%,
+      rgba(12, 22, 39, 0.5) 100%
+    ),
+    url('/images/cover.webp') center / cover no-repeat;
+}
+/* Readability layers. Dark mode: a dark shade over the photo, a dark glow
+   behind the text and a white subtitle. Light mode: an even light wash and
+   a black subtitle. */
+body:has(.hero-cover) {
+  --hero-shade: rgba(12, 22, 39, 0.4);
+  --hero-glow: rgba(12, 22, 39, 0.55);
+  --hero-glow-edge: rgba(12, 22, 39, 0.25);
+  --hero-text: #fff;
+  --hero-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), 0 0 18px rgba(0, 0, 0, 0.45);
+}
+html:not(.dark) body:has(.hero-cover) {
+  --hero-shade: color-mix(in oklab, var(--ui-bg) 35%, transparent);
+  --hero-glow: transparent;
+  --hero-glow-edge: transparent;
+  --hero-text: var(--ui-text-highlighted);
+  --hero-text-shadow: 0 0 6px color-mix(in oklab, var(--ui-bg) 45%, transparent);
+}
+@media (min-width: 1024px) {
+  body:has(.hero-cover) {
+    --hero-footer-height: 52px;
+  }
+}
+body:has(.hero-cover) main {
+  min-height: 0;
+}
+body:has(.hero-cover) footer {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+.hero-cover {
+  display: flex;
+  align-items: center;
+  /* Fill the screen above the footer, starting behind the navbar. */
+  min-height: calc(100svh - var(--hero-footer-height));
+  margin-top: calc(-1 * var(--ui-header-height));
+  padding-top: var(--ui-header-height);
+  color: var(--hero-text);
+  /* soft glow behind the text, fading out towards the edges */
+  background: radial-gradient(
+    ellipse 55% 45% at 50% 55%,
+    var(--hero-glow) 0%,
+    var(--hero-glow-edge) 55%,
+    transparent 100%
+  );
+}
+.hero-cover > * {
+  width: 100%;
+}
+.hero-cover h1 {
+  /* One glass box around the whole title. The words sit side by side and
+     stack on phones. Flex drops the space between the spans, so the gap
+     comes from the spans' padding. */
+  display: flex;
+  justify-content: center;
+  width: max-content;
+  max-width: 100%;
+  margin-inline: auto;
+  padding: 0.2em 12px;
+  border-radius: calc(var(--ui-radius) * 1.5); /* Nuxt UI rounded-md */
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--ui-text-highlighted);
+  font-size: 40px;
+  line-height: 1.4;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.title__item {
+  padding-inline: 0.4em;
+}
+@media (max-width: 639.98px) {
+  .hero-cover h1 {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+.hero-cover [data-slot="description"] {
+  color: var(--hero-text);
+  font-weight: 500;
+  text-shadow: var(--hero-text-shadow);
+}

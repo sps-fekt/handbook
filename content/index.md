@@ -4,9 +4,9 @@ description: Vše, co potřebuješ vědět na začátku studia na FEKT VUT. Při
 navigation: false
 ---
 
-::landing-hero
+::landing-hero{.hero-cover}
 #title
-Příručka prváka
+[Příručka]{.title__item} [prváka]{.title__item}
 
 #description
 Připravili pro tebe Studenti pro studenty. Fakulta elektrotechniky a komunikačních technologií, Vysoké učení technické v Brně.
@@ -26,6 +26,7 @@ Připravili pro tebe Studenti pro studenty. Fakulta elektrotechniky a komunikač
   to: /fakulta/discord
   size: xl
   color: neutral
+  variant: solid
   icon: i-simple-icons-discord
   ---
   Discord

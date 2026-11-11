@@ -4,9 +4,9 @@ description: Everything you need to know when starting your studies at FEEC BUT.
 navigation: false
 ---
 
-::landing-hero
+::landing-hero{.hero-cover}
 #title
-Freshman handbook
+[Freshman]{.title__item} [handbook]{.title__item}
 
 #description
 By Studenti pro studenty. Faculty of Electrical Engineering and Communication, Brno University of Technology. The English translation is in progress, until then most pages are in Czech.
@@ -26,6 +26,7 @@ By Studenti pro studenty. Faculty of Electrical Engineering and Communication, B
   to: /fakulta/discord
   size: xl
   color: neutral
+  variant: solid
   icon: i-simple-icons-discord
   ---
   Discord
