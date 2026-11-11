@@ -9,6 +9,14 @@
   --ui-primary: color-mix(in oklch, #003da5 62%, white);
 }
 
+/* A hand over buttons, as over links (Tailwind 4 leaves the arrow). */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
 /* ---- Homepage cover ----------------------------------------------------- */
 
 /* The cover photo behind the homepage (::landing-hero{.hero-cover}), tinted
