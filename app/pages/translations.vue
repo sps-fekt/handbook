@@ -1,4 +1,4 @@
-<!-- Translation status at /translations, from the data Lunaria writes to
+<!-- Translation status at /cs/translations and /en/translations, from the data Lunaria writes to
      .lunaria/status.json (lunaria.config.ts) when the site is built:
      for each Czech page, whether its English version is done, outdated (the
      Czech page changed since) or missing, with links to fix it on GitHub. -->
@@ -15,14 +15,15 @@ const repo = 'https://github.com/sps-fekt/handbook'
 const files = import.meta.glob<Entry[]>('../../.lunaria/status.json', { eager: true, import: 'default' })
 const data = computed(() => Object.values(files)[0] ?? [])
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const colors = { done: 'success', outdated: 'warning', missing: 'error' } as const
 
 // content/cs/1.getting-started/1.welcome.md → /cs/getting-started/welcome
 const pagePath = (file: string) => file.replace(/^content/, '').replace(/\/\d+\./g, '/').replace(/(\/index)?\.md$/, '')
 
 const rows = computed(() => data.value.flatMap(({ source, localizations }) => localizations.map((loc) => ({
-  page: pagePath(source.path),
+  // The page in the reader's language; a missing translation links the Czech one.
+  page: pagePath(locale.value === loc.lang && loc.status !== 'missing' ? loc.path : source.path),
   lang: loc.lang,
   status: loc.status,
   // Outdated: what changed in Czech since the translation was last updated.
@@ -37,21 +38,21 @@ const summary = computed(() => {
   return { total: rows.value.length, done: count('done'), outdated: count('outdated'), missing: count('missing') }
 })
 
-useSeoMeta({ title: 'Stav překladu', robots: 'noindex' })
+useSeoMeta({ title: () => t('translations.title'), robots: 'noindex' })
 </script>
 
 <template>
   <UContainer>
     <UPage>
       <UPageHeader
-        title="Stav překladu"
-        description="Které stránky je potřeba přeložit do angličtiny nebo aktualizovat po změně v češtině."
+        :title="t('translations.title')"
+        :description="t('translations.description')"
       />
 
       <UPageBody>
         <div class="flex flex-col gap-2">
           <p class="text-sm text-muted">
-            English: {{ summary.done }} {{ t('translationStatus.done').toLowerCase() }}, {{ summary.outdated }} {{ t('translationStatus.outdated').toLowerCase() }}, {{ summary.missing }} {{ t('translationStatus.missing').toLowerCase() }}
+            {{ t('translations.summary', summary) }}
           </p>
           <UProgress
             :model-value="summary.done"
@@ -62,8 +63,8 @@ useSeoMeta({ title: 'Stav překladu', robots: 'noindex' })
         <UTable
           :data="rows"
           :columns="[
-            { accessorKey: 'page', header: 'Stránka' },
-            { accessorKey: 'status', header: 'Stav' },
+            { accessorKey: 'page', header: t('translations.page') },
+            { accessorKey: 'status', header: t('translations.status') },
             { id: 'links', header: '' },
           ]"
         >
@@ -83,20 +84,30 @@ useSeoMeta({ title: 'Stav překladu', robots: 'noindex' })
             />
           </template>
           <template #links-cell="{ row }">
-            <div class="flex justify-end gap-3">
-              <ULink
+            <div class="flex justify-end gap-1">
+              <UTooltip
                 v-if="row.original.changes"
-                :to="row.original.changes"
-                target="_blank"
+                :text="t('translations.changes')"
               >
-                Co se změnilo
-              </ULink>
-              <ULink
-                :to="row.original.fix"
-                target="_blank"
-              >
-                {{ row.original.status === 'missing' ? 'Vytvořit' : 'Upravit' }}
-              </ULink>
+                <UButton
+                  :to="row.original.changes"
+                  target="_blank"
+                  icon="i-lucide-file-diff"
+                  color="neutral"
+                  variant="ghost"
+                  :aria-label="t('translations.changes')"
+                />
+              </UTooltip>
+              <UTooltip :text="t(row.original.status === 'missing' ? 'translations.create' : 'translations.edit')">
+                <UButton
+                  :to="row.original.fix"
+                  target="_blank"
+                  :icon="row.original.status === 'missing' ? 'i-lucide-file-plus' : 'i-lucide-pencil'"
+                  color="neutral"
+                  variant="ghost"
+                  :aria-label="t(row.original.status === 'missing' ? 'translations.create' : 'translations.edit')"
+                />
+              </UTooltip>
             </div>
           </template>
         </UTable>

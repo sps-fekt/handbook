@@ -28,11 +28,12 @@ export default defineNuxtConfig({
       { code: 'en', language: 'en', name: 'English', file: 'en.json' },
     ],
     customRoutes: 'config',
-    pages: { 'index': false, 'slug': false, 'lang': false, 'translations': false },
+    pages: { 'index': false, 'slug': false, 'lang': false },
     detectBrowserLanguage: false,
   },
   routeRules: {
     '/': { redirect: '/cs' },
+    '/translations': { redirect: '/cs/translations' },
   },
 
   llms: {

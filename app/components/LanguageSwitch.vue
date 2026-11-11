@@ -16,7 +16,7 @@ const { locale: lang, t } = useI18n()
 const isEnglish = computed(() => lang.value === 'en')
 
 const paths = computed(() => {
-  const all = new Set<string>(['/cs', '/en'])
+  const all = new Set<string>(['/cs', '/en', '/cs/translations', '/en/translations'])
   const walk = (items: NavigationItem[]) => items.forEach((item) => {
     all.add(item.path)
     if (item.children) walk(item.children)

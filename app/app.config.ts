@@ -16,8 +16,8 @@ export default defineAppConfig({
   footer: {
     owner: 'Studenti pro studenty, z. s.',
     links: [
-      // external: /translations has no language prefix, which Nuxt UI would add.
-      { 'icon': 'i-lucide-list-checks', 'to': '/translations', 'external': true, 'aria-label': 'Stav překladu' },
+      // Nuxt UI adds the language prefix: /cs/translations or /en/translations.
+      { 'icon': 'i-lucide-list-checks', 'to': '/translations', 'aria-label': 'Stav překladu' },
       { 'icon': 'i-simple-icons-github', 'to': 'https://github.com/sps-fekt/handbook', 'target': '_blank', 'aria-label': 'GitHub' },
     ],
   },
