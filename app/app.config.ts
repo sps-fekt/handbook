@@ -1,12 +1,22 @@
 import { site } from '../site'
 
 export default defineAppConfig({
+  ui: {
+    header: {
+      slots: {
+        // The language switch (AppHeaderCenter.vue) sits on the right, next to search.
+        center: 'flex-1 justify-end',
+        right: 'lg:flex-none',
+      },
+    },
+  },
   seo: {
     siteName: site.name,
   },
   header: {
     title: site.name,
-    // One tab per top-level section, plus the English pages.
+    // Not shown as tabs (AppHeaderCenter.vue is a language switch instead), but
+    // they keep the sidebar to the sections of the current language.
     nav: [
       { label: 'Příručka', to: '/zaciname/vitej', sections: ['zaciname', 'studium', 'fakulta', 'zivot-v-brne', 'o-prirucce'] },
       { label: 'English', to: '/en', sections: ['en'] },
