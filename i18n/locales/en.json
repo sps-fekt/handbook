@@ -1,0 +1,20 @@
+{
+  "siteName": "Freshman handbook",
+  "openMenu": "Open menu",
+  "closeMenu": "Close menu",
+  "language": "Language: English",
+  "editOnGithub": "Edit this page on GitHub",
+  "starOnGithub": "Star on GitHub",
+  "openAsMarkdown": "Open as Markdown",
+  "openInChat": "Open in Chat",
+  "copyActions": "Open copy actions menu",
+  "copyPrompt": "Copy prompt",
+  "promptCopied": "Prompt copied to clipboard",
+  "copyPage": "Copy page",
+  "pageCopied": "Page copied to clipboard",
+  "copyFailed": "Could not copy page.",
+  "openIn": "Open in {name}",
+  "aiPrompt": "Read {url} so I can ask questions about it.",
+  "notFoundTitle": "Page not found",
+  "notFoundDescription": "We are sorry but this page could not be found."
+}

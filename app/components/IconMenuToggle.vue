@@ -7,7 +7,7 @@ defineProps<{
   open: boolean
 }>()
 
-const { t } = useSiteLang()
+const { t } = useI18n()
 </script>
 
 <template>

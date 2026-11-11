@@ -15,11 +15,20 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  // English pages: the SEO module sets <html lang>, og:locale and Schema.org
-  // from the site config's current locale (site.defaultLocale, cs, elsewhere).
-  routeRules: {
-    '/en': { site: { currentLocale: 'en' } },
-    '/en/**': { site: { currentLocale: 'en' } },
+  // Czech at /, English under /en (content/en/). The layer's page routes stay
+  // unlocalised: its content lookup reads the whole path, /en included.
+  modules: ['@nuxtjs/i18n'],
+  i18n: {
+    baseUrl: 'https://prirucka.sps-fekt.cz',
+    defaultLocale: 'cs',
+    strategy: 'prefix_except_default',
+    locales: [
+      { code: 'cs', language: 'cs-CZ', name: 'Čeština', file: 'cs.json' },
+      { code: 'en', language: 'en', name: 'English', file: 'en.json' },
+    ],
+    customRoutes: 'config',
+    pages: { 'index': false, 'slug': false, 'en': false },
+    detectBrowserLanguage: false,
   },
 
   llms: {

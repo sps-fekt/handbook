@@ -1,12 +1,14 @@
 <!-- The layer's app root (comark-docs/app/app.vue) with the UI in the page's
-     language (useSiteLang): Nuxt UI's labels via UApp's locale
+     language (@nuxtjs/i18n): Nuxt UI's labels via UApp's locale
      and the site name in the title. The rest is the layer's unchanged. -->
 <script setup lang="ts">
 import type { NavigationItem } from 'comark-content'
 import { useRoute } from 'vue-router'
+import { cs, en } from '@nuxt/ui/locale'
 
 const { docs, seo } = useAppConfig()
-const { uiLocale, t } = useSiteLang()
+const { locale, t } = useI18n()
+const uiLocale = computed(() => (locale.value === 'en' ? en : cs))
 
 const content = useDocsContent()
 const route = useRoute()

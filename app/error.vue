@@ -1,14 +1,16 @@
 <!-- The layer's error page (comark-docs/app/error.vue) in the page's language
-     (useSiteLang). The rest is the layer's unchanged. -->
+     (@nuxtjs/i18n). The rest is the layer's unchanged. -->
 <script setup lang="ts">
 import type { NuxtError } from '#app'
 import type { NavigationItem } from 'comark-content'
+import { cs, en } from '@nuxt/ui/locale'
 
 defineProps<{
   error: NuxtError
 }>()
 
-const { uiLocale, t } = useSiteLang()
+const { locale, t } = useI18n()
+const uiLocale = computed(() => (locale.value === 'en' ? en : cs))
 
 useSeoMeta({
   title: () => t('notFoundTitle'),

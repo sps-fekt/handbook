@@ -1,6 +1,6 @@
 <!-- The layer's page links under the table of contents
      (comark-docs/app/components/docs/DocsPageAsideLinks.vue) with the labels
-     in the page's language (useSiteLang). The rest is the layer's unchanged. -->
+     in the page's language (@nuxtjs/i18n). The rest is the layer's unchanged. -->
 <script setup lang="ts">
 import type { ContentFile } from 'comark-content'
 import { useClipboard } from '@vueuse/core'
@@ -14,7 +14,7 @@ const content = useDocsContent()
 const { copy } = useClipboard()
 const { copy: copyLink } = useClipboard()
 const site = useSiteConfig()
-const { t } = useSiteLang()
+const { t } = useI18n()
 
 const { rawPrefix } = useRuntimeConfig().public.agentDiscovery
 const mdPath = computed(() => `${rawPrefix}${route.path}.md`)

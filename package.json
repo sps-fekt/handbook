@@ -8,6 +8,7 @@
     "preview": "node .output/server/index.mjs"
   },
   "dependencies": {
+    "@nuxtjs/i18n": "^10.6.0",
     "comark-docs": "github:comarkdown/comark-docs",
     "nuxt": "^4.6.4"
   },

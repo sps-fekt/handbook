@@ -3,18 +3,20 @@
      English pages live under /en with the Czech page's path, e.g.
      /about/contributing ↔ /en/about/contributing. The switch
      opens the same page in the other language when it exists, otherwise that
-     language's home page. -->
+     language's home page. It also adds the hreflang links between the two
+     versions, which @nuxtjs/i18n doesn't for the layer's unlocalised routes. -->
 <script setup lang="ts">
 import type { NavigationItem } from 'comark-content'
 
 const route = useRoute()
+const site = useSiteConfig()
 const navigation = inject<Ref<NavigationItem[]>>('navigation', ref([]))
 
-const { lang, t } = useSiteLang()
+const { locale: lang, t } = useI18n()
 const isEnglish = computed(() => lang.value === 'en')
 
 const paths = computed(() => {
-  const all = new Set<string>()
+  const all = new Set<string>(['/', '/en'])
   const walk = (items: NavigationItem[]) => items.forEach((item) => {
     all.add(item.path)
     if (item.children) walk(item.children)
@@ -23,16 +25,30 @@ const paths = computed(() => {
   return all
 })
 
-function pathIn(lang: 'cs' | 'en') {
+// The page's path in the given language, or undefined if there's no such page.
+function counterpart(lang: 'cs' | 'en') {
   const czech = isEnglish.value ? route.path.replace(/^\/en/, '') || '/' : route.path
   const target = lang === 'en' ? (czech === '/' ? '/en' : `/en${czech}`) : czech
-  return paths.value.has(target) ? target : lang === 'en' ? '/en' : '/'
+  return paths.value.has(target) ? target : undefined
 }
 
 const languages = computed(() => [
-  { code: 'cs', name: 'Čeština', to: pathIn('cs'), active: !isEnglish.value },
-  { code: 'en', name: 'English', to: pathIn('en'), active: isEnglish.value },
+  { code: 'cs', name: 'Čeština', to: counterpart('cs') ?? '/', active: !isEnglish.value },
+  { code: 'en', name: 'English', to: counterpart('en') ?? '/en', active: isEnglish.value },
 ])
+
+useHead({
+  link: () => {
+    const cs = counterpart('cs')
+    const en = counterpart('en')
+    if (!cs || !en) return []
+    return [
+      { rel: 'alternate', hreflang: 'cs', href: `${site.url}${cs}` },
+      { rel: 'alternate', hreflang: 'en', href: `${site.url}${en}` },
+      { rel: 'alternate', hreflang: 'x-default', href: `${site.url}${cs}` },
+    ]
+  },
+})
 </script>
 
 <template>

@@ -1,0 +1,20 @@
+{
+  "siteName": "Příručka prváka",
+  "openMenu": "Otevřít menu",
+  "closeMenu": "Zavřít menu",
+  "language": "Jazyk: čeština",
+  "editOnGithub": "Upravit na GitHubu",
+  "starOnGithub": "Dát hvězdičku na GitHubu",
+  "openAsMarkdown": "Otevřít jako Markdown",
+  "openInChat": "Otevřít v chatu",
+  "copyActions": "Otevřít nabídku kopírování",
+  "copyPrompt": "Kopírovat prompt",
+  "promptCopied": "Prompt zkopírován do schránky",
+  "copyPage": "Kopírovat stránku",
+  "pageCopied": "Stránka zkopírována do schránky",
+  "copyFailed": "Stránku se nepodařilo zkopírovat.",
+  "openIn": "Otevřít v {name}",
+  "aiPrompt": "Přečti si {url}, ať se tě na ni můžu ptát.",
+  "notFoundTitle": "Stránka nenalezena",
+  "notFoundDescription": "Omlouváme se, ale tuto stránku se nepodařilo najít."
+}

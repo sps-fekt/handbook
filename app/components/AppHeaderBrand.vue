@@ -2,12 +2,13 @@
      next to the site title. The logo is drawn as a mask filled with the
      current color, so one SVG serves light and dark mode. -->
 <script setup lang="ts">
-const { lang, t } = useSiteLang()
+const { t } = useI18n()
+const localePath = useLocalePath()
 </script>
 
 <template>
   <NuxtLink
-    :to="lang === 'en' ? '/en' : '/'"
+    :to="localePath('/')"
     class="flex shrink-0 items-center gap-3 text-highlighted lg:mr-3"
   >
     <span
