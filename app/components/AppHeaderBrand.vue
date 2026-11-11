@@ -7,16 +7,16 @@ const localePath = useLocalePath()
 </script>
 
 <template>
+  <!-- Hidden on phones, below the sm breakpoint (640px); see AppHeader.vue. -->
   <NuxtLink
     :to="localePath('/')"
-    class="flex shrink-0 items-center gap-3 text-highlighted lg:mr-3"
+    class="flex shrink-0 items-center gap-3 text-highlighted lg:mr-3 max-sm:hidden"
   >
     <span
       role="img"
       aria-label="Studenti pro studenty"
       class="size-6 shrink-0 bg-current [mask:url('/sps-logo.svg')_center/contain_no-repeat]"
     />
-    <!-- Below 400px the name doesn't fit beside the buttons: logo only (still read out). -->
-    <span class="font-bold leading-none max-[400px]:sr-only">{{ t('siteName') }}</span>
+    <span class="font-bold leading-none">{{ t('siteName') }}</span>
   </NuxtLink>
 </template>

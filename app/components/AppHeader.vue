@@ -16,11 +16,11 @@ const sidebar = useFilteredNavigation()
 </script>
 
 <template>
-  <!-- Below 400px the site name is hidden (AppHeaderBrand.vue) and the buttons
-       sit next to the logo, with only the menu toggle on the right. -->
+  <!-- Below the sm breakpoint (640px) the logo and site name are hidden (AppHeaderBrand.vue) and
+       the buttons start on the left, with only the menu toggle on the right. -->
   <UHeader
     :to="prefixLink(header?.to || '/', content.routeBase)"
-    :ui="{ right: 'max-[400px]:flex-1 max-[400px]:justify-start' }"
+    :ui="{ right: 'max-sm:flex-1 max-sm:justify-start' }"
   >
     <template #left>
       <AppHeaderBrand />
@@ -65,7 +65,7 @@ const sidebar = useFilteredNavigation()
     <template #toggle="{ open, toggle }">
       <IconMenuToggle
         :open="open"
-        class="max-[400px]:ms-auto"
+        class="max-sm:ms-auto"
         @click="toggle"
       />
     </template>
