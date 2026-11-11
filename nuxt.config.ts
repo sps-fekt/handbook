@@ -28,7 +28,7 @@ export default defineNuxtConfig({
       { code: 'en', language: 'en', name: 'English', file: 'en.json' },
     ],
     customRoutes: 'config',
-    pages: { 'index': false, 'slug': false, 'lang': false },
+    pages: { 'index': false, 'slug': false, 'lang': false, 'translations': false },
     detectBrowserLanguage: false,
   },
   routeRules: {
