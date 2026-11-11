@@ -33,4 +33,37 @@ export default defineConfig({
     },
   ],
   outDir: './public/translations',
+  // In Czech and in the site's look (lunaria/dashboard.css), with its header.
+  dashboard: {
+    title: 'Stav překladu',
+    description: 'Které stránky Příručky prváka je potřeba přeložit nebo aktualizovat.',
+    site: 'https://prirucka.sps-fekt.cz/translations/',
+    basesToHide: ['content/cs/', 'content/en/'],
+    customCss: ['./lunaria/dashboard.css'],
+    favicon: { inline: './public/favicon.svg' },
+    ui: {
+      'lang': 'cs',
+      'status.done': 'hotovo',
+      'status.outdated': 'zastaralé',
+      'status.missing': 'chybí',
+      'statusByLocale.heading': 'Postup podle jazyka',
+      'statusByLocale.outdatedLocalizationLink': 'zastaralý překlad',
+      'statusByLocale.incompleteLocalizationLink': 'neúplný překlad',
+      'statusByLocale.createFileLink': 'Vytvořit soubor',
+      'statusByLocale.sourceChangeHistoryLink': 'historie změn originálu',
+      'statusByLocale.missingKeys': 'Chybějící klíče',
+      'statusByLocale.completeLocalization': 'Překlad je kompletní, skvělá práce! 🎉',
+      'statusByFile.heading': 'Stav podle souboru',
+      'statusByFile.tableRowFile': 'Soubor',
+    },
+  },
+  renderer: {
+    slots: {
+      beforeTitle: () => `
+        <header class="site-header">
+          <a class="brand" href="/cs">Příručka prváka</a>
+          <a class="back" href="/cs/about/contributing">Jak přispívat →</a>
+        </header>`,
+    },
+  },
 })
