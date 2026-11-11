@@ -42,7 +42,7 @@ export default defineNuxtConfig({
     defaultLocale: 'cs',
     strategy: 'prefix',
     locales: [
-      { code: 'cs', language: 'cs-CZ', name: 'Čeština', file: 'cs.json' },
+      { code: 'cs', language: 'cs', name: 'Čeština', file: 'cs.json' },
       { code: 'en', language: 'en', name: 'English', file: 'en.json' },
     ],
     customRoutes: 'config',
