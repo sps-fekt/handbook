@@ -1,0 +1,10 @@
+/* Brand blue #003DA5 as the accent color, on top of the layer's neutral
+   (Geist) theme. Dark mode uses a lighter shade, readable on black.
+   The selectors are a step more specific than the layer's :root and .dark,
+   so they win whatever order the stylesheets load in. */
+:root:not(.dark) {
+  --ui-primary: #003da5;
+}
+:root.dark {
+  --ui-primary: color-mix(in oklch, #003da5 62%, white);
+}
