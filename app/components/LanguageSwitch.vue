@@ -1,6 +1,4 @@
-<!-- Replaces the layer's header tabs with a language switch. The tabs
-     (header.nav in app.config.ts) still decide which sections the sidebar
-     shows; they just aren't listed in the header.
+<!-- Language switch in the header (AppHeader.vue).
 
      English pages live under /en with the Czech page's path, e.g.
      /o-prirucce/jak-prispivat ↔ /en/o-prirucce/jak-prispivat. The switch
