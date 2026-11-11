@@ -22,7 +22,7 @@ export default defineNuxtConfig({
     url: 'https://prirucka.sps-fekt.cz',
     name: site.name,
     description: site.description,
-    defaultLocale: 'cs',
+    defaultLocale: 'en',
   },
 
   css: ['~/assets/css/main.css'],
@@ -33,13 +33,13 @@ export default defineNuxtConfig({
     },
   },
 
-  // Czech under /cs (content/cs/), English under /en (content/en/); / redirects
-  // to /cs. The layer's page routes stay unlocalised: its content lookup reads
+  // Czech under /cs (content/cs/), English under /en (content/en/); English is
+  // the default, / redirects to /en. Czech stays the source of the content. The layer's page routes stay unlocalised: its content lookup reads
   // the whole path, language prefix included.
   modules: ['@nuxtjs/i18n'],
   i18n: {
     baseUrl: 'https://prirucka.sps-fekt.cz',
-    defaultLocale: 'cs',
+    defaultLocale: 'en',
     strategy: 'prefix',
     locales: [
       { code: 'cs', language: 'cs', name: 'Čeština', file: 'cs.json' },
@@ -50,8 +50,8 @@ export default defineNuxtConfig({
     detectBrowserLanguage: false,
   },
   routeRules: {
-    '/': { redirect: '/cs' },
-    '/translations': { redirect: '/cs/translations' },
+    '/': { redirect: '/en' },
+    '/translations': { redirect: '/en/translations' },
   },
 
   llms: {

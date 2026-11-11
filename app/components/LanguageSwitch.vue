@@ -44,7 +44,7 @@ useHead({
     return [
       { rel: 'alternate', hreflang: 'cs', href: `${site.url}${cs}` },
       { rel: 'alternate', hreflang: 'en', href: `${site.url}${en}` },
-      { rel: 'alternate', hreflang: 'x-default', href: `${site.url}${cs}` },
+      { rel: 'alternate', hreflang: 'x-default', href: `${site.url}${en}` },
     ]
   },
 })

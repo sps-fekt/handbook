@@ -10,7 +10,7 @@ defineProps<{
 }>()
 
 const { locale, t } = useI18n()
-const uiLocale = computed(() => (locale.value === 'en' ? en : cs))
+const uiLocale = computed(() => (locale.value === 'cs' ? cs : en))
 
 useSeoMeta({
   title: () => t('notFoundTitle'),

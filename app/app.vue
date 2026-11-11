@@ -8,7 +8,7 @@ import { cs, en } from '@nuxt/ui/locale'
 
 const { docs, seo } = useAppConfig()
 const { locale, t } = useI18n()
-const uiLocale = computed(() => (locale.value === 'en' ? en : cs))
+const uiLocale = computed(() => (locale.value === 'cs' ? cs : en))
 
 const content = useDocsContent()
 const route = useRoute()
