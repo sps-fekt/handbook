@@ -22,6 +22,35 @@ export default defineAppConfig({
   toc: {
     title: 'Na této stránce',
   },
+  // The sidebar as in Docus (Nuxt UI's defaults plus Docus's icon size):
+  // section titles bold with an icon, pages indented along a line, the
+  // current page in the primary color. These replace the layer's flatter
+  // look; the highlight line is turned on where the navigation is rendered
+  // (layouts/LayoutsDocs.vue, AppHeader.vue).
+  ui: {
+    contentNavigation: {
+      slots: {
+        linkLeadingIcon: 'size-4 mx-0.5',
+        linkTrailing: 'hidden',
+        listWithChildren: 'ms-5 border-s border-default',
+        itemWithChildren: 'data-[state=open]:mb-1.5',
+        trigger: 'font-semibold',
+      },
+      variants: {
+        level: {
+          true: {
+            item: 'ps-1.5 -ms-px',
+            itemWithChildren: 'ps-1.5 -ms-px',
+          },
+        },
+        active: {
+          true: {
+            link: 'font-medium',
+          },
+        },
+      },
+    },
+  },
   github: {
     owner: 'sps-fekt',
     name: 'handbook',

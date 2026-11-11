@@ -70,6 +70,7 @@ const sidebar = useFilteredNavigation()
       <div class="flex flex-col justify-between gap-6 h-full">
         <UContentNavigation
           variant="link"
+          highlight
           :collapsible="false"
           :navigation="sidebar"
         />
