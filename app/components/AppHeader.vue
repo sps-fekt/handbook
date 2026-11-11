@@ -2,13 +2,15 @@
      - no tab bar (AppHeaderCenter); the language switch (LanguageSwitch.vue)
        goes last on the right instead, after search and history, styled and
        spaced like them;
-     - the switch is also in the mobile menu, which lists no tabs either.
+     - the mobile menu lists the sidebar's pages (the layer hides the sidebar
+       below lg and listed only the tabs there).
      The rest is the layer's header unchanged. -->
 <script setup lang="ts">
 const { header, footer, assistant } = useAppConfig()
 const content = useDocsContent()
 const historyOpen = useVersionHistory()
 const assistantOpen = useAssistant()
+const sidebar = useFilteredNavigation()
 </script>
 
 <template>
@@ -56,14 +58,21 @@ const assistantOpen = useAssistant()
     </template>
 
     <template #body>
-      <div class="flex flex-col justify-between h-full">
-        <UContentSearchButton
-          v-if="header?.search"
-          :collapsed="false"
-          size="xl"
-          class="w-full font-normal"
-          :icon="false"
-        />
+      <div class="flex flex-col justify-between gap-6 h-full">
+        <div class="flex flex-col gap-6">
+          <UContentSearchButton
+            v-if="header?.search"
+            :collapsed="false"
+            size="xl"
+            class="w-full font-normal"
+            :icon="false"
+          />
+          <UContentNavigation
+            variant="link"
+            :collapsible="false"
+            :navigation="sidebar"
+          />
+        </div>
         <div class="flex items-center gap-4">
           <template v-if="footer?.links">
             <UButton
