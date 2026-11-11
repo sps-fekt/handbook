@@ -102,3 +102,22 @@ thead:not(:has(th:not(:empty))) + tbody > tr:first-child > td:first-child {
 thead:not(:has(th:not(:empty))) + tbody > tr:first-child > td:last-child {
   border-start-end-radius: calc(var(--ui-radius) * 1.5);
 }
+
+/* ---- Images ---------------------------------------------------------------- */
+
+/* A narrow image, alone in its paragraph ({width} 100-399),
+   sits to the right of the text after it instead of on its own line, except
+   on phones. The wider ones (posters, the map) stay on their own. Headings
+   start below it, and lists keep their bullets clear of it. */
+@media (min-width: 640px) {
+  .comark-content p:has(> img:only-child:is([width^="1"], [width^="2"], [width^="3"])) {
+    float: right;
+    margin: 0.25rem 0 1rem 1.5rem;
+  }
+  .comark-content :is(h2, h3) {
+    clear: both;
+  }
+  .comark-content :is(ul, ol) {
+    display: flow-root;
+  }
+}
