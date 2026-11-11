@@ -131,3 +131,21 @@ body:has(.hero-cover) footer {
   font-weight: 500;
   text-shadow: var(--hero-text-shadow);
 }
+
+/* ---- Tables --------------------------------------------------------------- */
+
+/* Markdown tables always have a header row; one left empty (as on the study
+   programmes page) is hidden, and the first row takes over its top border
+   and rounded corners. */
+thead:not(:has(th:not(:empty))) {
+  display: none;
+}
+thead:not(:has(th:not(:empty))) + tbody > tr:first-child > td {
+  border-top-width: 1px;
+}
+thead:not(:has(th:not(:empty))) + tbody > tr:first-child > td:first-child {
+  border-start-start-radius: calc(var(--ui-radius) * 1.5);
+}
+thead:not(:has(th:not(:empty))) + tbody > tr:first-child > td:last-child {
+  border-start-end-radius: calc(var(--ui-radius) * 1.5);
+}
