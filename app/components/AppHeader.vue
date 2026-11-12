@@ -4,7 +4,8 @@
        like it;
      - no version-history button;
      - search, language, menu in this order on every width (on phones the
-       search is an icon button);
+       search is an icon button), and on phones a home button first, in
+       place of the hidden logo;
      - the colour mode button opens a menu of system, light and dark, and
        shows the current one's icon (UColorModeButton only toggles light
        and dark);
@@ -23,7 +24,8 @@ const sidebar = useFilteredNavigation()
 const colorMode = useColorMode()
 const modes = ['system', 'light', 'dark'] as const
 const mode = computed(() => modes.find((m) => m === colorMode.preference) ?? 'system')
-const { locale } = useI18n()
+const { locale, t } = useI18n()
+const localePath = useLocalePath()
 const labels = computed(() => (locale.value === 'cs' ? cs : en).messages.colorMode)
 const modeItems = computed(() => modes.map((m) => ({
   label: labels.value[m],
@@ -46,6 +48,16 @@ const modeItems = computed(() => modes.map((m) => ({
     </template>
 
     <template #right>
+      <UButton
+        :to="localePath('/')"
+        icon="i-lucide-house"
+        :aria-label="t('home')"
+        color="neutral"
+        variant="outline"
+        :ui="{ leadingIcon: 'size-4' }"
+        class="p-2 sm:hidden"
+      />
+
       <UContentSearchButton
         v-if="header?.search"
         :collapsed="assistantOpen"
