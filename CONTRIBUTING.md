@@ -44,39 +44,33 @@ Something worth knowing.
 
 Also `::tip`, `::warning` and `::caution`. See [components](https://docs-template.comark.dev/writing/components) for the rest.
 
-### Image size
-
-Images are full width unless given a width in pixels:
-
-```md
-![BEST Brno logo](/images/logo-best.webp){width="200"}
-```
+### Images
 
 Always write the `alt` text (in the brackets). It is read out by screen readers and shown when the image doesn't load.
 
-### Images beside the text
+By default an image is as wide as the text, on its own line. Add options in braces after it, separated by spaces. On phones every image is full width, on its own line, whatever the options.
 
-On screens wider than a phone, an image narrower than 400 px (`width` 100–399) that has its own paragraph and is followed by text sits **to the right of the text after it**. So put it just before the paragraph it belongs to, not after:
+| Option | What it does |
+|---|---|
+| `width="200"` | Width in pixels (at most the text's width). For logos and other pictures with a natural size. |
+| `.quarter` `.third` `.half` `.two-thirds` `.three-quarters` | That share of the text's width. |
+| `.float` | Beside the text, on the right. Without a size or width, at most half the text's width. |
+| `.float-left` | Beside the text, on the left. |
+| `.float-right` | The same as `.float`. |
+
+A sized image on its own line is centred. Combine a size or width with a float:
 
 ```md
-## BEST Brno
+![Faculty campus](/images/arealy-fakulty.webp){.half}
 
-![BEST Brno logo](/images/logo-best.webp){width="200"}
+![Studenti pro studenty logo](/sps-logo.svg){width="200" .float}
 
-Want to have fun during your studies? ...
+![FEEC library](/images/knihovna-fekt.webp){.third .float-left}
 ```
 
-It stays on its own line when:
+Use `.float`, so images sit on the same side throughout the handbook. Use `.float-left` only where the right side doesn't work, and don't write `.float-right`: it exists only as the counterpart of `.float-left`.
 
-- its `width` is 400 or more, or it has none (posters, the map, photos),
-- nothing follows it (the end of a page or section),
-- it is marked `.no-float`:
-
-  ```md
-  ![Individual timetable](/images/is-rozvrh.webp){width="300" .no-float}
-  ```
-
-On phones every image is on its own line.
+A floating image sits beside the text **after** it, so put it in its own paragraph just before the paragraph it belongs to. The next heading always starts below it.
 
 ### Tables without a header
 

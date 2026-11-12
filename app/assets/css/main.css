@@ -105,24 +105,62 @@ thead:not(:has(th:not(:empty))) + tbody > tr:first-child > td:last-child {
 
 /* ---- Images ---------------------------------------------------------------- */
 
-/* A narrow image, alone in its paragraph ({width} 100-399) and followed by
-   text, sits to the right of that text instead of on its own line, except
-   on phones. The wider ones (posters, the map) stay on their own, and so
-   does one marked {.no-float}: ![…](/images/x.webp){width="300" .no-float}.
-   Headings start below it, lists keep their bullets clear of it, and the
-   page's content ends below it (not beside the previous/next page links). */
+/* How an image is sized and placed (CONTRIBUTING.md, "Images").
+
+   Size, a share of the text's width: {.quarter} {.third} {.half}
+   {.two-thirds} {.three-quarters} (or a width in pixels, {width="200"},
+   mostly for logos). On its own line, a sized image is centred.
+
+   Beside the text, alone in its paragraph and put just before the text:
+   {.float} or {.float-right} on the right, {.float-left} on the left. Without
+   a size it is as wide as its width, at most half the text. Headings start
+   below it, lists keep their bullets clear of it, and the page's content ends
+   below it (not beside the previous/next page links).
+
+   All of this from 640px. On phones every image is full width, on its own line. */
 @media (min-width: 640px) {
   .comark-content {
     display: flow-root;
   }
-  .comark-content p:has(> img:only-child:is([width^="1"], [width^="2"], [width^="3"]):not(.no-float)):has(+ :is(p, ul, ol)) {
+
+  .comark-content img:is(.quarter, .third, .half, .two-thirds, .three-quarters) {
+    display: block;
+    margin-inline: auto;
+  }
+  .comark-content img.quarter { width: 25%; }
+  .comark-content img.third { width: 33.333%; }
+  .comark-content img.half { width: 50%; }
+  .comark-content img.two-thirds { width: 66.667%; }
+  .comark-content img.three-quarters { width: 75%; }
+
+  .comark-content p:has(> img:is(.float, .float-right, .float-left):only-child) {
     float: right;
+    max-width: 50%;
     margin: 0.25rem 0 1rem 1.5rem;
   }
+  .comark-content p:has(> img.float-left:only-child) {
+    float: left;
+    margin: 0.25rem 1.5rem 1rem 0;
+  }
+  /* A floating image with a size: the paragraph takes the size, the image fills it. */
+  .comark-content p:has(> img.quarter:is(.float, .float-right, .float-left):only-child) { width: 25%; max-width: none; }
+  .comark-content p:has(> img.third:is(.float, .float-right, .float-left):only-child) { width: 33.333%; max-width: none; }
+  .comark-content p:has(> img.half:is(.float, .float-right, .float-left):only-child) { width: 50%; max-width: none; }
+  .comark-content p:has(> img.two-thirds:is(.float, .float-right, .float-left):only-child) { width: 66.667%; max-width: none; }
+  .comark-content p:has(> img.three-quarters:is(.float, .float-right, .float-left):only-child) { width: 75%; max-width: none; }
+  .comark-content p > img:is(.quarter, .third, .half, .two-thirds, .three-quarters):is(.float, .float-right, .float-left) {
+    width: 100%;
+  }
+
   .comark-content :is(h2, h3) {
     clear: both;
   }
   .comark-content :is(ul, ol) {
     display: flow-root;
   }
+}
+/* The paragraph floats, never the image itself (Tailwind may generate its own
+   float-left and float-right from the Markdown it scans when building). */
+.comark-content img:is(.float, .float-right, .float-left) {
+  float: none;
 }
