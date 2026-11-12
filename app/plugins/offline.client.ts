@@ -27,8 +27,10 @@ export default defineNuxtPlugin(() => {
       ])
 
       const pages = new Set(['/cs', '/en', '/cs/translations', '/en/translations'])
+      // Sections (page: false, e.g. /en/studies) only redirect to their first
+      // page: a redirected response can't answer a navigation offline anyway.
       const walk = (items: NavigationItem[]) => items.forEach((item) => {
-        pages.add(item.path)
+        if (item.page !== false) pages.add(item.path)
         if (item.children) walk(item.children)
       })
       walk(navigation)
