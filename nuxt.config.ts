@@ -27,6 +27,13 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  // The colour mode in a cookie instead of localStorage, so the server knows it:
+  // the page comes in the right colours and the header's colour mode button
+  // (AppHeader.vue) is rendered with the rest of the header.
+  colorMode: {
+    storage: 'cookie',
+  },
+
   // Pages used to have Czech file names; old links keep working.
   routeRules: {
     '/cs/zaciname/vitej': { redirect: { to: '/cs/getting-started/welcome', statusCode: 301 } },

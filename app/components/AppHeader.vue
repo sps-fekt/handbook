@@ -8,7 +8,8 @@
        place of the hidden logo;
      - the colour mode button opens a menu of system, light and dark, and
        shows the current one's icon (UColorModeButton only toggles light
-       and dark);
+       and dark). It's rendered on the server too, which knows the mode from
+       its cookie (colorMode in nuxt.config.ts);
      - phones get one bar: logo and title, search, language and the menu, which lists the sidebar's pages. The layer's second bar
        under the header is gone (docs/DocsAsideMobileBar.vue). The menu
        button is outlined like the other header buttons.
@@ -85,21 +86,16 @@ const modeItems = computed(() => modes.map((m) => ({
 
       <LanguageSwitch />
 
-      <ClientOnly>
-        <UDropdownMenu :items="modeItems" :content="{ align: 'end' }">
-          <UButton
-            :icon="ui.icons[mode]"
-            :aria-label="labels[mode]"
-            color="neutral"
-            variant="outline"
-            :ui="{ leadingIcon: 'size-4' }"
-            class="p-2"
-          />
-        </UDropdownMenu>
-        <template #fallback>
-          <div class="size-8" />
-        </template>
-      </ClientOnly>
+      <UDropdownMenu :items="modeItems" :content="{ align: 'end' }">
+        <UButton
+          :icon="ui.icons[mode]"
+          :aria-label="labels[mode]"
+          color="neutral"
+          variant="outline"
+          :ui="{ leadingIcon: 'size-4' }"
+          class="p-2"
+        />
+      </UDropdownMenu>
     </template>
 
     <template #body>
