@@ -42,7 +42,7 @@ The site runs as a rootless Podman container (`handbook.quadlets`) under its own
 
 ### Deploys
 
-**Content** needs no deploy. The site reads the pages from GitHub, and a repository webhook tells it about every push (`/api/webhook`): the site then serves the new commit right away and reruns Lunaria for the translation status. Without the webhook, the site notices a new commit within 10 minutes on its own.
+**Content** needs no deploy. The site reads the pages from GitHub, and a repository webhook tells it about every push (`/api/webhook`): the site then serves the new commit right away and reruns Lunaria for the translation status. Without the webhook, the site notices a new commit within an hour on its own. Both need `VERCEL_ENV=production` (`config/handbook.env`): the layer is made for Vercel and otherwise keeps the content it started with.
 
 **Code** (everything outside `content/`) is deployed by `deploy/deploy.sh`: it pulls `main`, rebuilds the image when the site changed and restarts it. The header of the script lists what each kind of change does.
 
