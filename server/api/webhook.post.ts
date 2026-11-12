@@ -3,12 +3,12 @@ import { verify } from '@octokit/webhooks-methods'
 
 // GitHub calls this on every push (a repository webhook, see README.md).
 // A push to the site's branch makes the new content live right away instead of
-// within the 10 minutes the site otherwise takes to notice the new commit, and
-// updates the translation status. The layer's own /api/revalidate does the
+// within the hour the site otherwise takes to notice the new commit
+// (config/handbook.env), and updates the translation status. The layer's own /api/revalidate does the
 // same on Vercel only.
 // On the server it also asks for a deploy of the code (deploy/deploy.sh) by
-// writing DEPLOY_TRIGGER_FILE, which handbook-deploy.path watches. The deploy
-// only pulls when nothing outside content/ changed.
+// writing DEPLOY_TRIGGER_FILE, which handbook-deploy.path watches. When only
+// content/ changed, the deploy just pulls, without a rebuild or restart.
 export default defineEventHandler(async (event) => {
   const { docs } = useRuntimeConfig(event)
   const secret = docs.webhookSecret || process.env.WEBHOOK_SECRET

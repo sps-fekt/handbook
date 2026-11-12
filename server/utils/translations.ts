@@ -5,8 +5,8 @@ import config from '../../lunaria.config'
 // In production Lunaria keeps its own clone of the repository in /tmp and
 // pulls it on every run, so a content push needs no rebuild; in development
 // it reads the local repository. Rerun on every push (server/api/webhook.post.ts)
-// and at most every 10 minutes, as the site rechecks the content; the previous
-// status is served meanwhile.
+// and when a visit finds it older than 10 minutes; the previous status is
+// served meanwhile.
 
 const MAX_AGE = 10 * 60 * 1000
 

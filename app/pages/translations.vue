@@ -12,7 +12,9 @@ interface Entry {
   localizations: { path: string, lang: string, status: Status, git?: { latestTrackedCommit: Commit } }[]
 }
 
-const repo = 'https://github.com/sps-fekt/handbook'
+const { github } = useAppConfig()
+const repo = `https://github.com/${github?.owner}/${github?.name}`
+const branch = github?.branch || 'main'
 const { data: status } = await useFetch<Entry[]>('/api/translations')
 const data = computed(() => status.value ?? [])
 
@@ -38,7 +40,7 @@ const rows = computed(() => data.value.map(({ source, localizations }) => {
       changes: loc.status === 'outdated' && loc.git
         ? `${repo}/compare/${loc.git.latestTrackedCommit.hash}...${source.git.latestTrackedCommit.hash}`
         : undefined,
-      fix: loc.status === 'missing' ? `${repo}/new/main?filename=${loc.path}` : `${repo}/edit/main/${loc.path}`,
+      fix: loc.status === 'missing' ? `${repo}/new/${branch}?filename=${loc.path}` : `${repo}/edit/${branch}/${loc.path}`,
     }])),
   }
 }))
