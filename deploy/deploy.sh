@@ -3,7 +3,7 @@
 #
 #   deploy.sh            pull the deploy branch and apply what changed (run on a push to
 #                        GitHub through the webhook, and by the timer as a fallback; see README.md)
-#   deploy.sh --install  first-time setup: install units and Quadlets, build, start everything
+#   deploy.sh --install  first-time setup: install units and Quadlets, build, (re)start everything
 #   deploy.sh --rebuild  rebuild the image with the latest Node base image (security updates)
 #
 # What changed                          What happens
@@ -15,6 +15,12 @@
 # deploy/*.service|timer|path           the systemd units are reinstalled
 # *.md in the root, .github/**          nothing
 #
+# "Changed" is measured against what is actually installed or running, not
+# against the previous checkout, so nothing is missed after a fresh clone, a
+# force push or a failed run: the image against the commit it was built from,
+# the units against the installed ones, the Quadlet against the copy saved
+# when it was installed, config/ against the checksum saved at the last restart.
+#
 # At the end, the commit now running is written to $TRIGGER_DIR/deployed, which
 # the site shows in its footer (server/api/version.get.ts).
 #
@@ -25,6 +31,7 @@ set -euo pipefail
 IMAGE=localhost/handbook:latest
 BUILD_IMAGE=localhost/handbook-build:latest
 # Written by the site's webhook (server/api/webhook.post.ts), watched by handbook-deploy.path.
+# Also holds what was last applied: the Quadlet installed, the config started with.
 TRIGGER_DIR="$HOME/.local/state/handbook-deploy"
 REVISION_LABEL=org.opencontainers.image.revision
 # Paths that never need a new image. Everything else does.
@@ -69,18 +76,24 @@ main() {
         sed 's/^/  /' <<<"$changed"
     fi
 
-    if [[ $install == 1 ]] || grep -qE '^deploy/.*\.(service|timer|path)$' <<<"$changed"; then
+    local unit units=0 config
+    for unit in deploy/*.service deploy/*.timer deploy/*.path; do
+        cmp -s "$unit" "$HOME/.config/systemd/user/${unit##*/}" || units=1
+    done
+    if [[ $install == 1 || $units == 1 ]]; then
         echo "Installing systemd units"
         install -m 0644 -D -t "$HOME/.config/systemd/user" deploy/*.service deploy/*.timer deploy/*.path
         systemctl --user daemon-reload
         systemctl --user enable --now handbook-deploy.timer handbook-deploy.path
     fi
-    if [[ $install == 1 ]] || grep -qx 'handbook.quadlets' <<<"$changed"; then
+    if [[ $install == 1 ]] || ! cmp -s handbook.quadlets "$TRIGGER_DIR/installed.quadlets"; then
         echo "Installing Quadlets"
         podman quadlet install --replace handbook.quadlets
+        cp handbook.quadlets "$TRIGGER_DIR/installed.quadlets"
         restart=1
     fi
-    if grep -q '^config/' <<<"$changed"; then
+    config="$(cat config/* | sha256sum)"
+    if [[ "$config" != "$(cat "$TRIGGER_DIR/started.config" 2>/dev/null)" ]]; then
         restart=1
     fi
 
@@ -110,11 +123,12 @@ main() {
     git rev-parse HEAD >"$TRIGGER_DIR/deployed.tmp"
     mv "$TRIGGER_DIR/deployed.tmp" "$TRIGGER_DIR/deployed"
 
-    if [[ $install == 1 ]]; then
-        systemctl --user start handbook.service
-    elif [[ $restart == 1 ]]; then
+    # A restart, not a start: with --install the site may already be running,
+    # and it must pick up the new image and settings.
+    if [[ $install == 1 || $restart == 1 ]]; then
         echo "Restarting handbook.service"
         systemctl --user restart --no-block handbook.service
+        echo "$config" >"$TRIGGER_DIR/started.config"
     fi
 }
 
