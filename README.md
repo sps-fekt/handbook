@@ -72,7 +72,7 @@ To watch a deploy: `journalctl --user -fu handbook-deploy.service`. To deploy by
    openssl rand -hex 32 | tr -d '\n' | tee /dev/stderr | podman secret create handbook-webhook-secret -
    ```
 
-   In the repository settings → Webhooks → Add webhook: payload URL `https://prirucka.sps-fekt.cz/api/webhook`, content type `application/json`, the secret printed above, **Just the push event**. GitHub's first delivery (a ping) should answer 200.
+   In the repository settings → Webhooks → Add webhook: payload URL `https://handbook.sps-fekt.cz/api/webhook`, content type `application/json`, the secret printed above, **Just the push event**. GitHub's first delivery (a ping) should answer 200.
 
 4. Check `config/handbook.env` (site URL, repository).
 5. Run `~/repo/deploy/deploy.sh --install`.

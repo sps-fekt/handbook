@@ -19,7 +19,7 @@ export default defineNuxtConfig({
   extends: ['comark-docs'],
 
   site: {
-    url: 'https://prirucka.sps-fekt.cz',
+    url: 'https://handbook.sps-fekt.cz',
     name: site.name,
     description: site.description,
     defaultLocale: 'en',
@@ -74,7 +74,7 @@ export default defineNuxtConfig({
   // whole path, language prefix included.
   modules: ['@nuxtjs/i18n', '@vite-pwa/nuxt'],
   i18n: {
-    baseUrl: 'https://prirucka.sps-fekt.cz',
+    baseUrl: 'https://handbook.sps-fekt.cz',
     defaultLocale: 'en',
     strategy: 'prefix',
     locales: [
@@ -121,7 +121,7 @@ export default defineNuxtConfig({
   },
 
   llms: {
-    domain: 'https://prirucka.sps-fekt.cz',
+    domain: 'https://handbook.sps-fekt.cz',
   },
 
   app: {
