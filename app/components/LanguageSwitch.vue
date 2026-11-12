@@ -33,9 +33,10 @@ function counterpart(lang: 'cs' | 'en') {
   return paths.value.has(target) ? target : undefined
 }
 
+// A menu like the colour mode's (AppHeader.vue); the current language is highlighted.
 const languages = computed(() => [
-  { code: 'cs', name: 'Čeština', to: counterpart('cs') ?? '/cs', active: !isEnglish.value },
-  { code: 'en', name: 'English', to: counterpart('en') ?? '/en', active: isEnglish.value },
+  { label: 'Čeština', to: counterpart('cs') ?? '/cs', active: !isEnglish.value, onSelect: () => { saved.value = 'cs' } },
+  { label: 'English', to: counterpart('en') ?? '/en', active: isEnglish.value, onSelect: () => { saved.value = 'en' } },
 ])
 
 useHead({
@@ -53,7 +54,7 @@ useHead({
 </script>
 
 <template>
-  <UPopover :content="{ align: 'end' }">
+  <UDropdownMenu :items="languages" :content="{ align: 'end' }">
     <UButton
       color="neutral"
       variant="outline"
@@ -62,25 +63,5 @@ useHead({
       :ui="{ leadingIcon: 'size-4' }"
       class="p-2"
     />
-
-    <template #content>
-      <ul class="flex flex-col p-1">
-        <li
-          v-for="language in languages"
-          :key="language.code"
-        >
-          <NuxtLink
-            :to="language.to"
-            :lang="language.code"
-            @click="saved = language.code"
-            class="flex items-center justify-between gap-3 rounded-md px-2 py-1.5 text-sm hover:bg-elevated"
-            :class="language.active ? 'text-highlighted font-medium' : 'text-muted'"
-          >
-            {{ language.name }}
-            <span class="text-xs uppercase text-dimmed">{{ language.code }}</span>
-          </NuxtLink>
-        </li>
-      </ul>
-    </template>
-  </UPopover>
+  </UDropdownMenu>
 </template>

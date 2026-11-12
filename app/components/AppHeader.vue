@@ -28,8 +28,7 @@ const labels = computed(() => (locale.value === 'cs' ? cs : en).messages.colorMo
 const modeItems = computed(() => modes.map((m) => ({
   label: labels.value[m],
   icon: ui.icons[m],
-  type: 'checkbox' as const,
-  checked: mode.value === m,
+  active: mode.value === m,
   onSelect: () => { colorMode.preference = m },
 })))
 </script>
