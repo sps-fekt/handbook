@@ -5,15 +5,33 @@
      - no version-history button;
      - search, language, menu in this order on every width (on phones the
        search is an icon button);
+     - the colour mode button opens a menu of system, light and dark, and
+       shows the current one's icon (UColorModeButton only toggles light
+       and dark);
      - phones get one bar: logo and title, search, language and the menu, which lists the sidebar's pages. The layer's second bar
        under the header is gone (docs/DocsAsideMobileBar.vue). The menu
        button is outlined like the other header buttons.
      The rest is the layer's header unchanged. -->
 <script setup lang="ts">
-const { header, assistant } = useAppConfig()
+import { cs, en } from '@nuxt/ui/locale'
+
+const { header, assistant, ui } = useAppConfig()
 const content = useDocsContent()
 const assistantOpen = useAssistant()
 const sidebar = useFilteredNavigation()
+
+const colorMode = useColorMode()
+const modes = ['system', 'light', 'dark'] as const
+const mode = computed(() => modes.find((m) => m === colorMode.preference) ?? 'system')
+const { locale } = useI18n()
+const labels = computed(() => (locale.value === 'cs' ? cs : en).messages.colorMode)
+const modeItems = computed(() => modes.map((m) => ({
+  label: labels.value[m],
+  icon: ui.icons[m],
+  type: 'checkbox' as const,
+  checked: mode.value === m,
+  onSelect: () => { colorMode.preference = m },
+})))
 </script>
 
 <template>
@@ -56,12 +74,21 @@ const sidebar = useFilteredNavigation()
 
       <LanguageSwitch />
 
-      <UColorModeButton
-        color="neutral"
-        variant="outline"
-        :ui="{ leadingIcon: 'size-4' }"
-        class="p-2"
-      />
+      <ClientOnly>
+        <UDropdownMenu :items="modeItems" :content="{ align: 'end' }">
+          <UButton
+            :icon="ui.icons[mode]"
+            :aria-label="labels[mode]"
+            color="neutral"
+            variant="outline"
+            :ui="{ leadingIcon: 'size-4' }"
+            class="p-2"
+          />
+        </UDropdownMenu>
+        <template #fallback>
+          <div class="size-8" />
+        </template>
+      </ClientOnly>
     </template>
 
     <template #body>
