@@ -12,6 +12,33 @@ function commitHash() {
   }
 }
 
+// Pages used to have Czech file names; old links keep working (routeRules below).
+const moved: Record<string, string> = {
+  '/cs/zaciname/vitej':                     '/cs/getting-started/welcome',
+  '/cs/zaciname/prvni-dny-studia':          '/cs/getting-started/first-days',
+  '/cs/zaciname/co-to-vlastne-studuji':     '/cs/getting-started/study-programmes',
+  '/cs/zaciname/odstartuj-s-nami-semestr':  '/cs/getting-started/semester-kickoff',
+  '/cs/studium/system-vyuky':               '/cs/studies/teaching',
+  '/cs/studium/informacni-system':          '/cs/studies/information-system',
+  '/cs/studium/tipy-a-triky':               '/cs/studies/tips-and-tricks',
+  '/cs/studium/stipendia':                  '/cs/studies/scholarships',
+  '/cs/studium/akademicke-funkce-a-tituly': '/cs/studies/academic-titles',
+  '/cs/studium/socialni-bezpeci':           '/cs/studies/wellbeing',
+  '/cs/fakulta/dulezita-mista':             '/cs/faculty/important-places',
+  '/cs/fakulta/studentske-organizace':      '/cs/faculty/student-organizations',
+  '/cs/fakulta/discord':                    '/cs/faculty/discord',
+  '/cs/fakulta/sport':                      '/cs/faculty/sports',
+  '/cs/fakulta/fekt-merch':                 '/cs/faculty/merch',
+  '/cs/zivot-v-brne/kde-slozit-hlavu':      '/cs/life-in-brno/accommodation',
+  '/cs/zivot-v-brne/jidlo-v-brne':          '/cs/life-in-brno/food',
+  '/cs/zivot-v-brne/jak-funguje-brno':      '/cs/life-in-brno/transport',
+  '/cs/zivot-v-brne/salinkarty':            '/cs/life-in-brno/transit-passes',
+  '/cs/zivot-v-brne/pre-slovakov':          '/cs/life-in-brno/for-slovaks',
+  '/cs/o-prirucce/tiraz':                   '/cs/about/credits',
+  '/cs/o-prirucce/jak-prispivat':           '/cs/about/contributing',
+  '/en/o-prirucce/jak-prispivat':           '/en/about/contributing',
+}
+
 // Příručka prváka on the comark-docs layer (https://github.com/comarkdown/comark-docs).
 // Pages are rendered on the server at request time, no static generation:
 // in development from content/ on disk, in production from the GitHub repo.
@@ -34,32 +61,7 @@ export default defineNuxtConfig({
     storage: 'cookie',
   },
 
-  // Pages used to have Czech file names; old links keep working.
-  routeRules: {
-    '/cs/zaciname/vitej': { redirect: { to: '/cs/getting-started/welcome', statusCode: 301 } },
-    '/cs/zaciname/prvni-dny-studia': { redirect: { to: '/cs/getting-started/first-days', statusCode: 301 } },
-    '/cs/zaciname/co-to-vlastne-studuji': { redirect: { to: '/cs/getting-started/study-programmes', statusCode: 301 } },
-    '/cs/zaciname/odstartuj-s-nami-semestr': { redirect: { to: '/cs/getting-started/semester-kickoff', statusCode: 301 } },
-    '/cs/studium/system-vyuky': { redirect: { to: '/cs/studies/teaching', statusCode: 301 } },
-    '/cs/studium/informacni-system': { redirect: { to: '/cs/studies/information-system', statusCode: 301 } },
-    '/cs/studium/tipy-a-triky': { redirect: { to: '/cs/studies/tips-and-tricks', statusCode: 301 } },
-    '/cs/studium/stipendia': { redirect: { to: '/cs/studies/scholarships', statusCode: 301 } },
-    '/cs/studium/akademicke-funkce-a-tituly': { redirect: { to: '/cs/studies/academic-titles', statusCode: 301 } },
-    '/cs/studium/socialni-bezpeci': { redirect: { to: '/cs/studies/wellbeing', statusCode: 301 } },
-    '/cs/fakulta/dulezita-mista': { redirect: { to: '/cs/faculty/important-places', statusCode: 301 } },
-    '/cs/fakulta/studentske-organizace': { redirect: { to: '/cs/faculty/student-organizations', statusCode: 301 } },
-    '/cs/fakulta/discord': { redirect: { to: '/cs/faculty/discord', statusCode: 301 } },
-    '/cs/fakulta/sport': { redirect: { to: '/cs/faculty/sports', statusCode: 301 } },
-    '/cs/fakulta/fekt-merch': { redirect: { to: '/cs/faculty/merch', statusCode: 301 } },
-    '/cs/zivot-v-brne/kde-slozit-hlavu': { redirect: { to: '/cs/life-in-brno/accommodation', statusCode: 301 } },
-    '/cs/zivot-v-brne/jidlo-v-brne': { redirect: { to: '/cs/life-in-brno/food', statusCode: 301 } },
-    '/cs/zivot-v-brne/jak-funguje-brno': { redirect: { to: '/cs/life-in-brno/transport', statusCode: 301 } },
-    '/cs/zivot-v-brne/salinkarty': { redirect: { to: '/cs/life-in-brno/transit-passes', statusCode: 301 } },
-    '/cs/zivot-v-brne/pre-slovakov': { redirect: { to: '/cs/life-in-brno/for-slovaks', statusCode: 301 } },
-    '/cs/o-prirucce/tiraz': { redirect: { to: '/cs/about/credits', statusCode: 301 } },
-    '/cs/o-prirucce/jak-prispivat': { redirect: { to: '/cs/about/contributing', statusCode: 301 } },
-    '/en/o-prirucce/jak-prispivat': { redirect: { to: '/en/about/contributing', statusCode: 301 } },
-  },
+  routeRules: Object.fromEntries(Object.entries(moved).map(([from, to]) => [from, { redirect: { to, statusCode: 301 } }])),
 
   runtimeConfig: {
     public: {

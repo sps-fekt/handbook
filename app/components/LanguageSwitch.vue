@@ -17,15 +17,7 @@ const { locale: lang, t } = useI18n()
 const saved = useCookie('lang', { maxAge: 60 * 60 * 24 * 365, sameSite: 'lax' })
 const isEnglish = computed(() => lang.value === 'en')
 
-const paths = computed(() => {
-  const all = new Set<string>(['/cs', '/en', '/cs/translations', '/en/translations'])
-  const walk = (items: NavigationItem[]) => items.forEach((item) => {
-    all.add(item.path)
-    if (item.children) walk(item.children)
-  })
-  walk(navigation.value ?? [])
-  return all
-})
+const paths = computed(() => pagePaths(navigation.value ?? []))
 
 // The page's path in the given language, or undefined if there's no such page.
 function counterpart(lang: 'cs' | 'en') {

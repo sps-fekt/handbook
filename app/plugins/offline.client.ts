@@ -26,18 +26,9 @@ export default defineNuxtPlugin(() => {
         $fetch<{ sha: string | null }>('/api/content/head'),
       ])
 
-      const pages = new Set(['/cs', '/en', '/cs/translations', '/en/translations'])
-      // Sections (page: false, e.g. /en/studies) only redirect to their first
-      // page: a redirected response can't answer a navigation offline anyway.
-      const walk = (items: NavigationItem[]) => items.forEach((item) => {
-        if (item.page !== false) pages.add(item.path)
-        if (item.children) walk(item.children)
-      })
-      walk(navigation)
-
       const urls = [
         // The page, for opening it directly, and its content, for moving to it from another page.
-        ...[...pages].flatMap((path) => [path, `/api/content/get${path}`]),
+        ...[...pagePaths(navigation)].flatMap((path) => [path, `/api/content/get${path}`]),
         '/api/translations',
         // The search index the search box loads for this content commit (comark-docs useSearch).
         ...(sha ? [`/api/content/blob/${sha}/snapshot/default.json`, `/api/content/blob/${sha}/manifest.json`] : []),

@@ -123,15 +123,18 @@ thead:not(:has(th:not(:empty))) + tbody > tr:first-child > td:last-child {
     display: flow-root;
   }
 
+  /* The size, on the image and on a paragraph holding only that image. */
+  .comark-content :is(img.quarter, p:has(> img.quarter:only-child)) { --size: 25%; }
+  .comark-content :is(img.third, p:has(> img.third:only-child)) { --size: 33.333%; }
+  .comark-content :is(img.half, p:has(> img.half:only-child)) { --size: 50%; }
+  .comark-content :is(img.two-thirds, p:has(> img.two-thirds:only-child)) { --size: 66.667%; }
+  .comark-content :is(img.three-quarters, p:has(> img.three-quarters:only-child)) { --size: 75%; }
+
   .comark-content img:is(.quarter, .third, .half, .two-thirds, .three-quarters) {
     display: block;
+    width: var(--size);
     margin-inline: auto;
   }
-  .comark-content img.quarter { width: 25%; }
-  .comark-content img.third { width: 33.333%; }
-  .comark-content img.half { width: 50%; }
-  .comark-content img.two-thirds { width: 66.667%; }
-  .comark-content img.three-quarters { width: 75%; }
 
   .comark-content p:has(> img:is(.float, .float-right, .float-left):only-child) {
     float: right;
@@ -143,11 +146,10 @@ thead:not(:has(th:not(:empty))) + tbody > tr:first-child > td:last-child {
     margin: 0.25rem 1.5rem 1rem 0;
   }
   /* A floating image with a size: the paragraph takes the size, the image fills it. */
-  .comark-content p:has(> img.quarter:is(.float, .float-right, .float-left):only-child) { width: 25%; max-width: none; }
-  .comark-content p:has(> img.third:is(.float, .float-right, .float-left):only-child) { width: 33.333%; max-width: none; }
-  .comark-content p:has(> img.half:is(.float, .float-right, .float-left):only-child) { width: 50%; max-width: none; }
-  .comark-content p:has(> img.two-thirds:is(.float, .float-right, .float-left):only-child) { width: 66.667%; max-width: none; }
-  .comark-content p:has(> img.three-quarters:is(.float, .float-right, .float-left):only-child) { width: 75%; max-width: none; }
+  .comark-content p:has(> img:is(.quarter, .third, .half, .two-thirds, .three-quarters):is(.float, .float-right, .float-left):only-child) {
+    width: var(--size);
+    max-width: none;
+  }
   .comark-content p > img:is(.quarter, .third, .half, .two-thirds, .three-quarters):is(.float, .float-right, .float-left) {
     width: 100%;
   }
