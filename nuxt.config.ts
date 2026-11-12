@@ -113,6 +113,30 @@ export default defineNuxtConfig({
       navigateFallback: null,
       globPatterns: ['**/*.{js,css,png,svg,ico,webp,woff2}'],
       runtimeCaching: [{
+        // / (the installed app's start page) and /translations only redirect
+        // to the visitor's language (server/middleware/language.ts), and a
+        // redirect can't be kept for offline use. Offline, the worker
+        // redirects instead: to the language last picked (the lang cookie,
+        // where the browser lets the worker read it), else the browser's,
+        // else the other one, whichever page is saved.
+        // Runs in the service worker as written: only browser globals.
+        urlPattern: ({ sameOrigin, url, request }) => sameOrigin && request.mode === 'navigate' && ['/', '/translations'].includes(url.pathname),
+        handler: async ({ request, url }) => {
+          try {
+            return await fetch(request)
+          }
+          catch {
+            const saved = (await (self as any).cookieStore?.get('lang').catch(() => null))?.value
+            const browser = navigator.languages.map((tag) => tag.toLowerCase().split('-')[0]).find((lang) => ['cs', 'sk', 'en'].includes(lang!))
+            const czech = saved ? saved === 'cs' : browser === 'cs' || browser === 'sk'
+            for (const lang of czech ? ['cs', 'en'] : ['en', 'cs']) {
+              const target = `${url.origin}/${lang}${url.pathname === '/' ? '' : url.pathname}`
+              if (await caches.match(target, { cacheName: 'pages', ignoreVary: true })) return Response.redirect(target, 302)
+            }
+            return Response.error()
+          }
+        },
+      }, {
         urlPattern: ({ sameOrigin, url }) => sameOrigin && !url.pathname.startsWith('/api/assistant'),
         handler: 'NetworkFirst',
         options: { cacheName: 'pages', networkTimeoutSeconds: 5, matchOptions: { ignoreVary: true } },
