@@ -15,6 +15,9 @@
 # deploy/*.service|timer|path           the systemd units are reinstalled
 # *.md in the root, .github/**          nothing
 #
+# At the end, the commit now running is written to $TRIGGER_DIR/deployed, which
+# the site shows in its footer (server/api/version.get.ts).
+#
 # The image is labelled with the commit it was built from. If a build fails, the
 # site keeps running the previous image and the next run tries the build again.
 set -euo pipefail
@@ -101,6 +104,10 @@ main() {
         podman image prune --force >/dev/null
         restart=1
     fi
+
+    # Not reached when the build fails (set -e): the footer keeps the previous commit.
+    git rev-parse HEAD >"$TRIGGER_DIR/deployed.tmp"
+    mv "$TRIGGER_DIR/deployed.tmp" "$TRIGGER_DIR/deployed"
 
     if [[ $install == 1 ]]; then
         systemctl --user start handbook.service

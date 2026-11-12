@@ -36,6 +36,8 @@ Secret=handbook-webhook-secret,type=env,target=NUXT_DOCS_WEBHOOK_SECRET
 # handbook-deploy.service through handbook-deploy.path. deploy.sh creates the directory.
 Volume=%h/.local/state/handbook-deploy:/deploy:z
 Environment=DEPLOY_TRIGGER_FILE=/deploy/requested
+# The commit deploy.sh last deployed, shown in the footer (server/api/version.get.ts).
+Environment=DEPLOY_VERSION_FILE=/deploy/deployed
 
 [Service]
 Restart=always

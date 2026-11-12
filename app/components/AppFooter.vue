@@ -1,16 +1,16 @@
 <!-- Replaces the layer's footer, which links its own brand assets page. On the
      right: the translation status, the repository and the version shown, linked to
-     its commit. That's the content's commit, which the layer looks up on GitHub
-     (app.vue), or else the commit the site was built from (nuxt.config.ts). -->
+     its commit: the commit last deployed to the server (server/api/version.get.ts).
+     Looked up on the server, so the HTML already shows it and it doesn't change
+     once the page has loaded. -->
 <script setup lang="ts">
 const { footer, github } = useAppConfig()
 const { t } = useI18n()
-const { commit } = useRuntimeConfig().public
-const contentSha = inject<Ref<string | null | undefined>>('sha', ref(null))
+const { data: deployed } = useFetch('/api/version')
 
 const repoName = `${github?.owner}/${github?.name}`
 const repoUrl = `https://github.com/${repoName}`
-const version = computed(() => contentSha.value?.slice(0, 7) || commit)
+const version = computed(() => deployed.value?.commit?.slice(0, 7))
 </script>
 
 <template>

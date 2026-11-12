@@ -2,7 +2,7 @@ import { execSync } from 'node:child_process'
 import { site } from './site'
 
 // Short hash of the commit the site is built from, shown in the footer when the
-// content's own commit isn't known (in development). Empty without git.
+// deployed commit isn't known (in development, see server/api/version.get.ts). Empty without git.
 function commitHash() {
   try {
     return execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim()
