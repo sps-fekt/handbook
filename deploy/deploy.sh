@@ -31,7 +31,7 @@ REVISION_LABEL=org.opencontainers.image.revision
 NO_BUILD_RE='^(content/|deploy/|config/|\.github/|handbook\.quadlets$|[^/]+\.md$)'
 
 # Everything runs inside main(), so bash has read the whole script
-# before "git merge" can replace this file.
+# before "git checkout" can replace this file.
 main() {
     local repo branch install=0 rebuild=0 old new changed built build=0 restart=0
     case "${1:-}" in
@@ -62,8 +62,9 @@ main() {
     changed=""
     if [[ "$old" != "$new" ]]; then
         changed="$(git diff --name-only "$old" "$new")"
-        git checkout --quiet "$branch" 2>/dev/null || git checkout --quiet -b "$branch" "origin/$branch"
-        git merge --ff-only --quiet "origin/$branch"
+        # The server's clone mirrors GitHub, also when its history was rewritten
+        # (a force push): a merge would refuse that, and every deploy would fail.
+        git checkout --quiet --force -B "$branch" "origin/$branch"
         echo "Updated ${old:0:7} -> ${new:0:7}:"
         sed 's/^/  /' <<<"$changed"
     fi
