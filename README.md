@@ -44,11 +44,11 @@ The site runs as a rootless Podman container (`handbook.quadlets`) under its own
 
 **Content** needs no deploy. The site reads the pages from GitHub, and a repository webhook tells it about every push (`/api/webhook`): the site then serves the new commit right away and reruns Lunaria for the translation status. Without the webhook, the site notices a new commit within an hour on its own. Both need `VERCEL_ENV=production` (`config/handbook.env`): the layer is made for Vercel and otherwise keeps the content it started with.
 
-**Code** (everything outside `content/`) is deployed by `deploy/deploy.sh`: it pulls `main`, rebuilds the image when the site changed and restarts it. The header of the script lists what each kind of change does.
+**Code** (everything outside `content/`) is deployed by `deploy/deploy.sh`: it pulls `main`, rebuilds the image when the code changed, installs the Quadlet and the systemd units when they or `config/` changed, and restarts the site after either. The header of the script says more.
 
 It runs right after every push to `main`, started by the same webhook: the site writes `~/.local/state/handbook-deploy/requested` (mounted into the container), and `handbook-deploy.path` starts `handbook-deploy.service` when the file appears. Nothing connects to the server from outside, so SSH can stay reachable only over the VPN. As a fallback, `handbook-deploy.timer` checks GitHub every 10 minutes.
 
-To watch a deploy: `journalctl --user -fu handbook-deploy.service`. To deploy by hand: `~/repo/deploy/deploy.sh`.
+To watch a deploy: `journalctl --user -fu handbook-deploy.service`. To deploy by hand: `systemctl --user start handbook-deploy.service` (so it can't run alongside an automatic deploy), with a newer Node base image: `~/repo/deploy/deploy.sh --rebuild`.
 
 ### Setup
 
@@ -75,4 +75,4 @@ To watch a deploy: `journalctl --user -fu handbook-deploy.service`. To deploy by
    In the repository settings → Webhooks → Add webhook: payload URL `https://handbook.sps-fekt.cz/api/webhook`, content type `application/json`, the secret printed above, **Just the push event**. GitHub's first delivery (a ping) should answer 200.
 
 4. Check `config/handbook.env` (site URL, repository).
-5. Run `~/repo/deploy/deploy.sh --install`.
+5. Run `~/repo/deploy/deploy.sh`. The first run builds the image, installs everything and starts the site.

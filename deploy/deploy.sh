@@ -1,135 +1,66 @@
 #!/usr/bin/env bash
-# Deploys the handbook from GitHub. Run as the handbook user.
+# Deploys the handbook: brings ~/repo up to date with main on GitHub and applies
+# what changed. Run as the handbook user by handbook-deploy.service (on every
+# push through the webhook, and by a timer), or by hand, also for the first setup.
 #
-#   deploy.sh            pull the deploy branch and apply what changed (run on a push to
-#                        GitHub through the webhook, and by the timer as a fallback; see README.md)
-#   deploy.sh --install  first-time setup: install units and Quadlets, build, (re)start everything
-#   deploy.sh --rebuild  rebuild the image with the latest Node base image (security updates)
+#   deploy.sh            deploy
+#   deploy.sh --rebuild  also update the Node base image (security updates)
 #
-# What changed                          What happens
-# app files, package*.json              the image is rebuilt and the site restarted
-# content/**                            nothing: the site reads pages from GitHub, and the
-#                                       GitHub webhook makes a push live right away
-# config/**                             the site is restarted (no rebuild)
-# handbook.quadlets                     the Quadlets are reinstalled and the site restarted
-# deploy/*.service|timer|path           the systemd units are reinstalled
-# *.md in the root, .github/**          nothing
-#
-# "Changed" is measured against what is actually installed or running, not
-# against the previous checkout, so nothing is missed after a fresh clone, a
-# force push or a failed run: the image against the commit it was built from,
-# the units against the installed ones, the Quadlet against the copy saved
-# when it was installed, config/ against the checksum saved at the last restart.
-#
-# At the end, the commit now running is written to $TRIGGER_DIR/deployed, which
-# the site shows in its footer (server/api/version.get.ts).
-#
-# The image is labelled with the commit it was built from. If a build fails, the
-# site keeps running the previous image and the next run tries the build again.
+# - The image is rebuilt when what it's built from changed, which is everything
+#   but content/ (the site reads pages from GitHub) and the files below.
+# - The Quadlet, the systemd units and config/ are installed, and the site
+#   restarted, when any of them changed since the last run.
+# A failed run is retried in full by the next one.
 set -euo pipefail
 
 IMAGE=localhost/handbook:latest
-BUILD_IMAGE=localhost/handbook-build:latest
-# Written by the site's webhook (server/api/webhook.post.ts), watched by handbook-deploy.path.
-# Also holds what was last applied: the Quadlet installed, the config started with.
-TRIGGER_DIR="$HOME/.local/state/handbook-deploy"
-REVISION_LABEL=org.opencontainers.image.revision
-# Paths that never need a new image. Everything else does.
-NO_BUILD_RE='^(content/|deploy/|config/|\.github/|handbook\.quadlets$|[^/]+\.md$)'
+LABEL=org.opencontainers.image.revision
+# Mounted into the container: "requested" is written by the webhook, "deployed"
+# (the commit running) is shown in the footer, "setup" is a checksum of what was
+# last installed.
+STATE="$HOME/.local/state/handbook-deploy"
 
-# Everything runs inside main(), so bash has read the whole script
-# before "git checkout" can replace this file.
+# In a function, so bash has read the whole script before git replaces it.
 main() {
-    local repo branch install=0 rebuild=0 old new changed built build=0 restart=0
-    case "${1:-}" in
-        --install) install=1 ;;
-        --rebuild) rebuild=1 ;;
-        "") ;;
-        *) echo "Unknown option: $1" >&2; return 2 ;;
-    esac
-    repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-    branch="${DEPLOY_BRANCH:-main}"
-    cd "$repo"
+    [[ $# == 0 || $1 == --rebuild ]] || { echo "Usage: deploy.sh [--rebuild]" >&2; return 2; }
+    cd "$(dirname "$0")/.."
+    install -d -m 0777 "$STATE"  # 0777: the container's user is another uid
+    rm -f "$STATE/requested"     # a push during this run writes it again
 
-    # Clear the webhook's request; a push during this run writes it again.
-    # 0777: the container's user is mapped to another uid.
-    install -d -m 0777 "$TRIGGER_DIR"
-    rm -f "$TRIGGER_DIR/requested"
+    # A checkout, not a merge, so the clone follows GitHub after a force push too.
+    git fetch --quiet origin main
+    git checkout --quiet --force -B main origin/main
 
-    # A manual run and the timer must not build at the same time.
-    exec 9>"${XDG_RUNTIME_DIR:-/tmp}/handbook-deploy.lock"
-    if ! flock -n 9; then
-        echo "Another deploy is running"
-        return 0
-    fi
-
-    git fetch --quiet origin "$branch"
-    old="$(git rev-parse HEAD)"
-    new="$(git rev-parse "origin/$branch")"
-    changed=""
-    if [[ "$old" != "$new" ]]; then
-        changed="$(git diff --name-only "$old" "$new")"
-        # The server's clone mirrors GitHub, also when its history was rewritten
-        # (a force push): a merge would refuse that, and every deploy would fail.
-        git checkout --quiet --force -B "$branch" "origin/$branch"
-        echo "Updated ${old:0:7} -> ${new:0:7}:"
-        sed 's/^/  /' <<<"$changed"
-    fi
-
-    local unit units=0 config
-    for unit in deploy/*.service deploy/*.timer deploy/*.path; do
-        cmp -s "$unit" "$HOME/.config/systemd/user/${unit##*/}" || units=1
-    done
-    if [[ $install == 1 || $units == 1 ]]; then
-        echo "Installing systemd units"
-        install -m 0644 -D -t "$HOME/.config/systemd/user" deploy/*.service deploy/*.timer deploy/*.path
-        systemctl --user daemon-reload
-        systemctl --user enable --now handbook-deploy.timer handbook-deploy.path
-    fi
-    if [[ $install == 1 ]] || ! cmp -s handbook.quadlets "$TRIGGER_DIR/installed.quadlets"; then
-        echo "Installing Quadlets"
-        podman quadlet install --replace handbook.quadlets
-        cp handbook.quadlets "$TRIGGER_DIR/installed.quadlets"
-        restart=1
-    fi
-    config="$(cat config/* | sha256sum)"
-    if [[ "$config" != "$(cat "$TRIGGER_DIR/started.config" 2>/dev/null)" ]]; then
-        restart=1
-    fi
-
-    # Compare with the commit the running image was built from, not with the
-    # previous checkout, so a failed build is retried on the next run.
-    built="$(podman image inspect --format "{{index .Config.Labels \"$REVISION_LABEL\"}}" "$IMAGE" 2>/dev/null || true)"
-    if [[ $install == 1 || $rebuild == 1 ]] || ! git cat-file -e "${built:-none}^{commit}" 2>/dev/null; then
-        build=1
-    elif [[ "$built" != "$new" ]] && git diff --name-only "$built" "$new" | grep -qvE "$NO_BUILD_RE"; then
-        build=1
-    fi
-
-    if [[ $build == 1 ]]; then
-        echo "Building $IMAGE from ${new:0:7}"
-        # The base image is updated only with --rebuild, so the cached layers
-        # (apt-get, npm ci) are reused. The build stage is tagged so that the
-        # prune below doesn't delete its cache.
-        local pull=missing
-        [[ $rebuild == 1 ]] && pull=newer
-        podman build --pull=$pull --target build -t "$BUILD_IMAGE" .
-        podman build --pull=$pull --label "$REVISION_LABEL=$new" -t "$IMAGE" .
+    local code built setup pull=missing restart=0
+    # The last commit that changed what the image is built from.
+    code="$(git log -1 --format=%H -- . ':!content' ':!config' ':!deploy' ':!.github' ':!*.md' ':!handbook.quadlets')"
+    built="$(podman image inspect --format "{{index .Config.Labels \"$LABEL\"}}" "$IMAGE" 2>/dev/null || true)"
+    if [[ $code != "$built" || $# == 1 ]]; then
+        echo "Building ${code:0:7}"
+        [[ $# == 1 ]] && pull=newer
+        # The build stage is tagged, so the prune keeps its cache (npm ci).
+        podman build --pull=$pull --target build -t localhost/handbook-build .
+        podman build --pull=$pull --label "$LABEL=$code" -t "$IMAGE" .
         podman image prune --force >/dev/null
         restart=1
     fi
 
-    # Not reached when the build fails (set -e): the footer keeps the previous commit.
-    git rev-parse HEAD >"$TRIGGER_DIR/deployed.tmp"
-    mv "$TRIGGER_DIR/deployed.tmp" "$TRIGGER_DIR/deployed"
-
-    # A restart, not a start: with --install the site may already be running,
-    # and it must pick up the new image and settings.
-    if [[ $install == 1 || $restart == 1 ]]; then
-        echo "Restarting handbook.service"
-        systemctl --user restart --no-block handbook.service
-        echo "$config" >"$TRIGGER_DIR/started.config"
+    setup="$(cat handbook.quadlets config/* deploy/*.service deploy/*.timer deploy/*.path | sha256sum)"
+    if [[ $setup != "$(cat "$STATE/setup" 2>/dev/null)" ]]; then
+        echo "Installing the Quadlet and the systemd units"
+        podman quadlet install --replace handbook.quadlets
+        install -m 0644 -D -t ~/.config/systemd/user deploy/*.service deploy/*.timer deploy/*.path
+        systemctl --user daemon-reload
+        systemctl --user enable --now handbook-deploy.timer handbook-deploy.path
+        restart=1
     fi
+
+    if [[ $restart == 1 ]]; then
+        echo "Restarting the site"
+        systemctl --user restart --no-block handbook.service
+        echo "$setup" >"$STATE/setup"
+    fi
+    git rev-parse HEAD >"$STATE/deployed"
 }
 
 main "$@"

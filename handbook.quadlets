@@ -3,7 +3,7 @@
 # The image is built locally from this repository by deploy/deploy.sh.
 # Before installing, create the Podman secrets listed in README.md (Server setup).
 #
-# Install and start:  ~/repo/deploy/deploy.sh --install
+# Install and start:  ~/repo/deploy/deploy.sh
 # Logs:               podman logs -f --tail 100 handbook
 # Remove:             podman quadlet rm handbook.container
 
