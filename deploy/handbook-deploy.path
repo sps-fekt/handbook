@@ -1,0 +1,14 @@
+[Unit]
+Description=Deploy the handbook when the site's GitHub webhook asks for it
+
+# The site writes this file on every push to main (server/api/webhook.post.ts);
+# deploy.sh deletes it when it starts. A push during a deploy writes it again,
+# so another deploy follows. The directory is mounted into the container
+# (handbook.quadlets) and created by deploy.sh.
+
+[Path]
+PathExists=%h/.local/state/handbook-deploy/requested
+Unit=handbook-deploy.service
+
+[Install]
+WantedBy=paths.target

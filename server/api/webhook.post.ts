@@ -1,3 +1,4 @@
+import { writeFile } from 'node:fs/promises'
 import { verify } from '@octokit/webhooks-methods'
 
 // GitHub calls this on every push (a repository webhook, see README.md).
@@ -5,6 +6,9 @@ import { verify } from '@octokit/webhooks-methods'
 // within the 10 minutes the site otherwise takes to notice the new commit, and
 // updates the translation status. The layer's own /api/revalidate does the
 // same on Vercel only.
+// On the server it also asks for a deploy of the code (deploy/deploy.sh) by
+// writing DEPLOY_TRIGGER_FILE, which handbook-deploy.path watches. The deploy
+// only pulls when nothing outside content/ changed.
 export default defineEventHandler(async (event) => {
   const { docs } = useRuntimeConfig(event)
   const secret = docs.webhookSecret || process.env.WEBHOOK_SECRET
@@ -19,6 +23,13 @@ export default defineEventHandler(async (event) => {
   const branch = targetBranch()
   const push = getHeader(event, 'x-github-event') === 'push' ? JSON.parse(body) : undefined
   if (push?.ref !== `refs/heads/${branch}`) return { ok: true, skipped: true }
+
+  const trigger = process.env.DEPLOY_TRIGGER_FILE
+  if (trigger) {
+    await writeFile(trigger, `${push.after}\n`).catch((error) => {
+      console.error('[webhook] Could not request a deploy:', error)
+    })
+  }
 
   const sha = await resolveContentSha(branch, docs.contentDir, { refresh: true })
   // Takes a few seconds (git pull); GitHub doesn't need to wait for it.

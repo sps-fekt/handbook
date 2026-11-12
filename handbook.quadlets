@@ -32,6 +32,11 @@ Secret=handbook-app-secret,type=env,target=NUXT_APP_SECRET
 # Secret of the GitHub webhook that tells the site about pushes (server/api/webhook.post.ts).
 Secret=handbook-webhook-secret,type=env,target=NUXT_DOCS_WEBHOOK_SECRET
 
+# The webhook asks for a deploy by writing a file here, which starts
+# handbook-deploy.service through handbook-deploy.path. deploy.sh creates the directory.
+Volume=%h/.local/state/handbook-deploy:/deploy:z
+Environment=DEPLOY_TRIGGER_FILE=/deploy/requested
+
 [Service]
 Restart=always
 TimeoutStartSec=120

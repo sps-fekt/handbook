@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
 
-# Only a check. The server deploys on its own (deploy.yml), see README.md.
+# Only a check. The server deploys on its own, see "Deploys" in README.md.
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -1,8 +1,8 @@
 [Unit]
 Description=Check GitHub for handbook updates every 10 minutes
 
-# A fallback: a push to GitHub deploys right away (.github/workflows/deploy.yml
-# starts handbook-deploy.service over SSH), this catches what that misses.
+# A fallback: a push to GitHub deploys right away (the webhook triggers
+# handbook-deploy.path), this catches what that misses.
 
 [Timer]
 OnBootSec=2min

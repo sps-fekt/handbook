@@ -20,7 +20,7 @@ Freshman handbook (Příručka prváka) of Studenti pro studenty, built on the [
 | `i18n/locales/` | Texts of the interface in Czech and English |
 | `lunaria.config.ts` | Translation tracking |
 | `Containerfile`, `handbook.quadlets`, `config/`, `deploy/` | The server, see [Server](#server) |
-| `.github/workflows/` | A check build on every push and pull request, and the deploy |
+| `.github/workflows/` | A check build on every push and pull request |
 
 ## Editing
 
@@ -46,31 +46,9 @@ The site runs as a rootless Podman container (`handbook.quadlets`) under its own
 
 **Code** (everything outside `content/`) is deployed by `deploy/deploy.sh`: it pulls `main`, rebuilds the image when the site changed and restarts it. The header of the script lists what each kind of change does.
 
-It runs right after every push to `main`: the `Deploy` workflow connects to the server over SSH, which starts `handbook-deploy.service`. As a fallback, `handbook-deploy.timer` checks GitHub every 10 minutes.
+It runs right after every push to `main`, started by the same webhook: the site writes `~/.local/state/handbook-deploy/requested` (mounted into the container), and `handbook-deploy.path` starts `handbook-deploy.service` when the file appears. Nothing connects to the server from outside, so SSH can stay reachable only over the VPN. As a fallback, `handbook-deploy.timer` checks GitHub every 10 minutes.
 
-The workflow's SSH key can only start the deploy. To set it up:
-
-1. On any machine, create a key without a passphrase:
-
-   ```bash
-   ssh-keygen -t ed25519 -N '' -C github-deploy -f deploy_key
-   ```
-
-2. On the server, add the public key (`deploy_key.pub`) to the handbook user's `~/.ssh/authorized_keys`, limited to starting the deploy:
-
-   ```
-   restrict,command="systemctl --user start --no-block handbook-deploy.service" ssh-ed25519 AAAA… github-deploy
-   ```
-
-3. In the repository settings (Secrets and variables → Actions), add:
-
-   | Name | Kind | Value |
-   |---|---|---|
-   | `DEPLOY_SSH_KEY` | secret | the private key, the whole of `deploy_key` |
-   | `DEPLOY_SSH_TARGET` | variable | `user@host`, or `ssh://user@host:port` |
-   | `DEPLOY_SSH_KNOWN_HOSTS` | variable | the server's host key: the output of `ssh-keyscan host` (`-p port` for another port) |
-
-   Then delete `deploy_key`.
+To watch a deploy: `journalctl --user -fu handbook-deploy.service`. To deploy by hand: `~/repo/deploy/deploy.sh`.
 
 ### Setup
 

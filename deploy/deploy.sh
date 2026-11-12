@@ -2,9 +2,9 @@
 # Deploys the handbook from GitHub. Run as the handbook user.
 #
 #   deploy.sh            pull the deploy branch and apply what changed (run on a push to
-#                        GitHub over SSH, and by the timer as a fallback; see README.md)
+#                        GitHub through the webhook, and by the timer as a fallback; see README.md)
 #   deploy.sh --install  first-time setup: install units and Quadlets, build, start everything
-#   deploy.sh --rebuild  rebuild the image even if nothing changed (e.g. for Node security updates)
+#   deploy.sh --rebuild  rebuild the image with the latest Node base image (security updates)
 #
 # What changed                          What happens
 # app files, package*.json              the image is rebuilt and the site restarted
@@ -12,7 +12,7 @@
 #                                       GitHub webhook makes a push live right away
 # config/**                             the site is restarted (no rebuild)
 # handbook.quadlets                     the Quadlets are reinstalled and the site restarted
-# deploy/*.service|timer                the systemd units are reinstalled
+# deploy/*.service|timer|path           the systemd units are reinstalled
 # *.md in the root, .github/**          nothing
 #
 # The image is labelled with the commit it was built from. If a build fails, the
@@ -20,6 +20,9 @@
 set -euo pipefail
 
 IMAGE=localhost/handbook:latest
+BUILD_IMAGE=localhost/handbook-build:latest
+# Written by the site's webhook (server/api/webhook.post.ts), watched by handbook-deploy.path.
+TRIGGER_DIR="$HOME/.local/state/handbook-deploy"
 REVISION_LABEL=org.opencontainers.image.revision
 # Paths that never need a new image. Everything else does.
 NO_BUILD_RE='^(content/|deploy/|config/|\.github/|handbook\.quadlets$|[^/]+\.md$)'
@@ -37,6 +40,11 @@ main() {
     repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
     branch="${DEPLOY_BRANCH:-main}"
     cd "$repo"
+
+    # Clear the webhook's request; a push during this run writes it again.
+    # 0777: the container's user is mapped to another uid.
+    install -d -m 0777 "$TRIGGER_DIR"
+    rm -f "$TRIGGER_DIR/requested"
 
     # A manual run and the timer must not build at the same time.
     exec 9>"${XDG_RUNTIME_DIR:-/tmp}/handbook-deploy.lock"
@@ -57,10 +65,11 @@ main() {
         sed 's/^/  /' <<<"$changed"
     fi
 
-    if [[ $install == 1 ]] || grep -qE '^deploy/.*\.(service|timer)$' <<<"$changed"; then
+    if [[ $install == 1 ]] || grep -qE '^deploy/.*\.(service|timer|path)$' <<<"$changed"; then
         echo "Installing systemd units"
-        install -m 0644 -D -t "$HOME/.config/systemd/user" deploy/*.service deploy/*.timer
+        install -m 0644 -D -t "$HOME/.config/systemd/user" deploy/*.service deploy/*.timer deploy/*.path
         systemctl --user daemon-reload
+        systemctl --user enable --now handbook-deploy.timer handbook-deploy.path
     fi
     if [[ $install == 1 ]] || grep -qx 'handbook.quadlets' <<<"$changed"; then
         echo "Installing Quadlets"
@@ -82,13 +91,18 @@ main() {
 
     if [[ $build == 1 ]]; then
         echo "Building $IMAGE from ${new:0:7}"
-        podman build --pull=newer --label "$REVISION_LABEL=$new" -t "$IMAGE" .
+        # The base image is updated only with --rebuild, so the cached layers
+        # (apt-get, npm ci) are reused. The build stage is tagged so that the
+        # prune below doesn't delete its cache.
+        local pull=missing
+        [[ $rebuild == 1 ]] && pull=newer
+        podman build --pull=$pull --target build -t "$BUILD_IMAGE" .
+        podman build --pull=$pull --label "$REVISION_LABEL=$new" -t "$IMAGE" .
         podman image prune --force >/dev/null
         restart=1
     fi
 
     if [[ $install == 1 ]]; then
-        systemctl --user enable --now handbook-deploy.timer
         systemctl --user start handbook.service
     elif [[ $restart == 1 ]]; then
         echo "Restarting handbook.service"
