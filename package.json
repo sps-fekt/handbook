@@ -4,11 +4,11 @@
   "type": "module",
   "scripts": {
     "dev": "nuxt dev",
-    "build": "lunaria build && nuxt build",
-    "preview": "node .output/server/index.mjs",
-    "lunaria": "lunaria build"
+    "build": "nuxt build",
+    "preview": "node .output/server/index.mjs"
   },
   "dependencies": {
+    "@lunariajs/core": "^0.3.0",
     "@nuxtjs/i18n": "^10.6.0",
     "comark-docs": "github:comarkdown/comark-docs",
     "nuxt": "^4.6.4"
@@ -18,7 +18,6 @@
     "vue-demi": false
   },
   "devDependencies": {
-    "@lunariajs/core": "^0.3.0",
     "@vite-pwa/nuxt": "^1.1.1"
   }
 }

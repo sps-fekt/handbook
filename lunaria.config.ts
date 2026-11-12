@@ -1,8 +1,8 @@
 import { defineConfig } from '@lunariajs/core/config'
 
-// Translation tracking. `npm run build` writes the status to
-// .lunaria/ before `nuxt build`, shown at /cs/translations
-// (app/pages/translations.vue); `npm run lunaria` refreshes it in development.
+// Translation tracking, shown at /cs/translations (app/pages/translations.vue).
+// The server runs Lunaria on the first visit and after every push
+// (server/utils/translations.ts, server/api/webhook.post.ts).
 //
 // A page is "outdated" when content/cs/<page>.md got a commit after the last
 // commit to content/en/<page>.md; /cs/translations links to the diff of what
@@ -32,6 +32,4 @@ export default defineConfig({
       type: 'universal',
     },
   ],
-  // Only the data is used: app/pages/translations.vue renders it at /cs/translations and /en/translations.
-  outDir: './.lunaria',
 })

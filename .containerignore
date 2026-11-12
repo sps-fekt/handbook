@@ -1,4 +1,4 @@
-# .git is NOT ignored: Lunaria needs the history to track translations.
+# .git is NOT ignored: comark-docs reads the GitHub repository from its remote.
 node_modules
 .output
 .nuxt

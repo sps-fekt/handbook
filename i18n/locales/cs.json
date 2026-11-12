@@ -16,7 +16,7 @@
   "notFoundTitle": "Stránka nenalezena",
   "notFoundDescription": "Omlouváme se, ale tuto stránku se nepodařilo najít.",
   "translationStatus": {
-    "done": "Hotovo",
+    "up-to-date": "Hotovo",
     "outdated": "Zastaralé",
     "missing": "Chybí"
   },

@@ -29,6 +29,8 @@ EnvironmentFile=%h/repo/config/handbook.env
 Secret=handbook-github-token,type=env,target=NUXT_DOCS_GITHUB_TOKEN
 # Random string signing the link preview (OG) image URLs.
 Secret=handbook-app-secret,type=env,target=NUXT_APP_SECRET
+# Secret of the GitHub webhook that tells the site about pushes (server/api/webhook.post.ts).
+Secret=handbook-webhook-secret,type=env,target=NUXT_DOCS_WEBHOOK_SECRET
 
 [Service]
 Restart=always

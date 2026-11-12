@@ -7,9 +7,9 @@
 #   deploy.sh --rebuild  rebuild the image even if nothing changed (e.g. for Node security updates)
 #
 # What changed                          What happens
-# content/**, app files, package*.json  the image is rebuilt and the site restarted (the site
-#                                       reads pages from GitHub, but the translation status
-#                                       at /cs/translations is made at build time)
+# app files, package*.json              the image is rebuilt and the site restarted
+# content/**                            nothing: the site reads pages from GitHub, and the
+#                                       GitHub webhook makes a push live right away
 # config/**                             the site is restarted (no rebuild)
 # handbook.quadlets                     the Quadlets are reinstalled and the site restarted
 # deploy/*.service|timer                the systemd units are reinstalled
@@ -22,7 +22,7 @@ set -euo pipefail
 IMAGE=localhost/handbook:latest
 REVISION_LABEL=org.opencontainers.image.revision
 # Paths that never need a new image. Everything else does.
-NO_BUILD_RE='^(deploy/|config/|\.github/|handbook\.quadlets$|[^/]+\.md$)'
+NO_BUILD_RE='^(content/|deploy/|config/|\.github/|handbook\.quadlets$|[^/]+\.md$)'
 
 # Everything runs inside main(), so bash has read the whole script
 # before "git merge" can replace this file.

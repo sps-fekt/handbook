@@ -4,7 +4,7 @@ Freshman handbook (Příručka prváka) of Studenti pro studenty, built on the [
 
 - **Czech and English.** Czech is the source language. The English version has the same file names.
 - **Pages served from GitHub.** In production the site reads the Markdown from this repository when a page is requested, so it isn't bundled into the build.
-- **Translation tracking** with [Lunaria](https://lunaria.dev). The page `/cs/translations` lists English pages that are missing or older than their Czech source.
+- **Translation tracking** with [Lunaria](https://lunaria.dev). The page `/cs/translations` lists English pages that are missing or older than their Czech source. The server runs Lunaria itself, so it's current without a rebuild.
 - **Installable as an app** and readable offline (PWA).
 
 ## Contents
@@ -42,9 +42,11 @@ The site runs as a rootless Podman container (`handbook.quadlets`) under its own
 
 ### Deploys
 
-`deploy/deploy.sh` pulls `main`, rebuilds the image when the site changed and restarts it. The header of the script lists what each kind of change does. Content changes rebuild the image too: the pages themselves come from GitHub, but the translation status is made at build time.
+**Content** needs no deploy. The site reads the pages from GitHub, and a repository webhook tells it about every push (`/api/webhook`): the site then serves the new commit right away and reruns Lunaria for the translation status. Without the webhook, the site notices a new commit within 10 minutes on its own.
 
-It runs right after every push to `main`: the `Deploy` workflow connects to the server over SSH, which starts `handbook-deploy.service`. As a fallback, `handbook-deploy.timer` checks GitHub every 10 minutes. Without either, a content change still shows up on its own within about 15 minutes, as the site rechecks the branch every 10 minutes and caches pages for 5.
+**Code** (everything outside `content/`) is deployed by `deploy/deploy.sh`: it pulls `main`, rebuilds the image when the site changed and restarts it. The header of the script lists what each kind of change does.
+
+It runs right after every push to `main`: the `Deploy` workflow connects to the server over SSH, which starts `handbook-deploy.service`. As a fallback, `handbook-deploy.timer` checks GitHub every 10 minutes.
 
 The workflow's SSH key can only start the deploy. To set it up:
 
@@ -86,5 +88,13 @@ The workflow's SSH key can only start the deploy. To set it up:
    openssl rand -hex 32 | tr -d '\n' | podman secret create handbook-app-secret -
    ```
 
-3. Check `config/handbook.env` (site URL, repository).
-4. Run `~/repo/deploy/deploy.sh --install`.
+3. Create the webhook secret, and the webhook on GitHub with the same value:
+
+   ```bash
+   openssl rand -hex 32 | tr -d '\n' | tee /dev/stderr | podman secret create handbook-webhook-secret -
+   ```
+
+   In the repository settings → Webhooks → Add webhook: payload URL `https://prirucka.sps-fekt.cz/api/webhook`, content type `application/json`, the secret printed above, **Just the push event**. GitHub's first delivery (a ping) should answer 200.
+
+4. Check `config/handbook.env` (site URL, repository).
+5. Run `~/repo/deploy/deploy.sh --install`.

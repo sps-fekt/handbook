@@ -1,25 +1,23 @@
-<!-- Translation status at /cs/translations and /en/translations, from the data Lunaria writes to
-     .lunaria/status.json (lunaria.config.ts) when the site is built. As in
+<!-- Translation status at /cs/translations and /en/translations, from Lunaria
+     (lunaria.config.ts), run by the server (server/utils/translations.ts). As in
      Lunaria's own dashboard: progress per language, then a row per Czech page
      with a column per language saying whether its translation is done,
      outdated (the Czech page changed since) or missing, with links to fix it
      on GitHub. A language added in lunaria.config.ts gets its own column. -->
 <script setup lang="ts">
 interface Commit { hash: string, date: string, message: string }
-type Status = 'done' | 'outdated' | 'missing'
+type Status = 'up-to-date' | 'outdated' | 'missing'
 interface Entry {
   source: { path: string, git: { latestTrackedCommit: Commit } }
   localizations: { path: string, lang: string, status: Status, git?: { latestTrackedCommit: Commit } }[]
 }
 
 const repo = 'https://github.com/sps-fekt/handbook'
-// Bundled at build time, right after Lunaria writes it. A glob, so a missing file (no
-// `npm run lunaria` yet) gives an empty page instead of a failed build.
-const files = import.meta.glob<Entry[]>('../../.lunaria/status.json', { eager: true, import: 'default' })
-const data = computed(() => Object.values(files)[0] ?? [])
+const { data: status } = await useFetch<Entry[]>('/api/translations')
+const data = computed(() => status.value ?? [])
 
 const { t, locale } = useI18n()
-const colors = { done: 'success', outdated: 'warning', missing: 'error' } as const
+const colors = { 'up-to-date': 'success', 'outdated': 'warning', 'missing': 'error' } as const
 
 const languages = computed(() => [...new Set(data.value.flatMap((entry) => entry.localizations.map((loc) => loc.lang)))])
 // The language's name in the reader's language, e.g. "Angličtina" / "English".
@@ -48,7 +46,7 @@ const rows = computed(() => data.value.map(({ source, localizations }) => {
 const summaries = computed(() => languages.value.map((lang) => {
   const statuses = rows.value.map((row) => row.cells[lang]?.status)
   const count = (status: Status) => statuses.filter((s) => s === status).length
-  return { lang, total: statuses.length, done: count('done'), outdated: count('outdated'), missing: count('missing') }
+  return { lang, total: statuses.length, done: count('up-to-date'), outdated: count('outdated'), missing: count('missing') }
 }))
 
 const columns = computed(() => [
