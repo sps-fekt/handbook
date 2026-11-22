@@ -1,6 +1,7 @@
 <!-- The layer's page links under the table of contents
      (comark-docs/app/components/docs/DocsPageAsideLinks.vue) with the labels
-     in the page's language (@nuxtjs/i18n). The rest is the layer's unchanged. -->
+     in the page's language (@nuxtjs/i18n), and a link to the page in the
+     page editor (/cs/editor?file=…). The rest is the layer's unchanged. -->
 <script setup lang="ts">
 import type { ContentFile } from 'comark-content'
 import { useClipboard } from '@vueuse/core'
@@ -28,8 +29,19 @@ const githubUrl = computed(
 // The raw markdown route reads production content, so a versioned preview has nothing to open.
 const isProd = computed(() => content.value.mode === 'prod')
 const disabledLinkClass = 'text-dimmed hover:text-dimmed cursor-not-allowed'
+// The arrow after a link that opens in a new tab is for links that leave the site.
+const sameSite = { linkLabelExternalIcon: 'hidden' }
+
+// The page in the page editor (app/pages/editor.vue), in the page's language:
+// content/cs/2.studies/1.teaching.md is /cs/editor?file=cs/2.studies/1.teaching.md.
+const editorUrl = computed(() => `/${props.page.meta.stem.split('/')[0]}/editor?file=${props.page.meta.stem}${props.page.meta.extension}`)
 
 const links = computed(() => [
+  {
+    icon: 'i-lucide-square-pen',
+    label: t('editInEditor'),
+    to: editorUrl.value,
+  },
   ...(githubUrl.value
     ? [
         {
@@ -58,6 +70,7 @@ const links = computed(() => [
     target: '_blank',
     disabled: !isProd.value,
     class: !isProd.value ? disabledLinkClass : undefined,
+    ui: sameSite,
   },
   ...((docs?.asideLinks ?? []).map((link: { label: string, icon?: string, to: string, target?: string }) => ({
     target: '_blank',

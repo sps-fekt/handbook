@@ -13,6 +13,10 @@
      - phones get one bar: logo and title, search, language and the menu, which lists the sidebar's pages. The layer's second bar
        under the header is gone (docs/DocsAsideMobileBar.vue). The menu
        button is outlined like the other header buttons.
+     - in the page editor (/cs/editor?file=…), the file being edited in the middle
+       of the screen, on wide screens only (UHeader's centre is hidden below
+       lg). The layer keeps the left side narrow (lg:flex-none); there it
+       grows as wide as the right side, so the middle is the screen's.
      The rest is the layer's header unchanged. -->
 <script setup lang="ts">
 import { cs, en } from '@nuxt/ui/locale'
@@ -27,6 +31,11 @@ const modes = ['system', 'light', 'dark'] as const
 const mode = computed(() => modes.find((m) => m === colorMode.preference) ?? 'system')
 const { locale, t } = useI18n()
 const localePath = useLocalePath()
+const route = useRoute()
+// /cs/editor?file=cs/2.studies/3.tips-and-tricks.md edits content/cs/2.studies/3.tips-and-tricks.md;
+// /cs/editor alone lists the files.
+const inEditor = computed(() => /^\/[a-z]{2}\/editor\/?$/.test(route.path))
+const editorFile = computed(() => inEditor.value && route.query.file ? `${String(route.query.file).replace(/\.md$/, '')}.md` : undefined)
 const labels = computed(() => (locale.value === 'cs' ? cs : en).messages.colorMode)
 const modeItems = computed(() => modes.map((m) => ({
   label: labels.value[m],
@@ -42,11 +51,14 @@ const modeItems = computed(() => modes.map((m) => ({
   <UHeader
     :to="prefixLink(header?.to || '/', content.routeBase)"
     :toggle="{ variant: 'outline', class: 'p-2 max-sm:ms-auto', ui: { leadingIcon: 'size-4' } }"
-    :ui="{ left: 'max-sm:hidden', right: 'max-sm:flex-1 max-sm:justify-start' }"
+    :ui="{ left: ['max-sm:hidden', inEditor && 'lg:flex-1'], center: 'min-w-0', right: 'max-sm:flex-1 max-sm:justify-start' }"
   >
     <template #left>
       <AppHeaderBrand />
     </template>
+
+    <span v-if="editorFile" class="truncate font-mono text-sm text-muted">{{ editorFile }}</span>
+    <span v-else-if="inEditor" class="truncate text-sm text-muted">{{ t('editor.files') }}</span>
 
     <template #right>
       <UButton

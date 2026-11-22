@@ -8,10 +8,13 @@
     "preview": "node .output/server/index.mjs"
   },
   "dependencies": {
+    "@github/markdown-toolbar-element": "^2.2.3",
     "@lunariajs/core": "^0.3.0",
     "@nuxtjs/i18n": "^10.6.0",
     "comark-docs": "github:comarkdown/comark-docs",
-    "nuxt": "^4.6.4"
+    "nuxt": "^4.6.4",
+    "nuxt-auth-utils": "^0.6.2",
+    "text-field-edit": "^4.1.1"
   },
   "allowScripts": {
     "esbuild": true,

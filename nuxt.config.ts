@@ -37,6 +37,9 @@ const moved: Record<string, string> = {
   '/cs/o-prirucce/tiraz':                   '/cs/about/credits',
   '/cs/o-prirucce/jak-prispivat':           '/cs/about/contributing',
   '/en/o-prirucce/jak-prispivat':           '/en/about/contributing',
+  // The translation status is the editor's list of files now.
+  '/cs/translations':                       '/cs/editor',
+  '/en/translations':                       '/en/editor',
 }
 
 // Příručka prváka on the comark-docs layer (https://github.com/comarkdown/comark-docs).
@@ -70,11 +73,21 @@ export default defineNuxtConfig({
   },
 
   // Czech under /cs (content/cs/), English under /en (content/en/); English is
-  // the default; / and /translations redirect to the visitor's language
+  // the default; /, /editor and /translations redirect to the visitor's language
   // (server/middleware/language.ts). Czech stays the source of the content.
   // The layer's page routes stay unlocalised: its content lookup reads the
   // whole path, language prefix included.
-  modules: ['@nuxtjs/i18n', '@vite-pwa/nuxt'],
+  // nuxt-auth-utils: the page editor's GitHub sign-in (server/routes/editor/login.get.ts).
+  // Its OAuth app comes from NUXT_OAUTH_GITHUB_* (config/handbook.env, a Podman
+  // secret); its session cookie is sealed with NUXT_APP_SECRET.
+  modules: ['@nuxtjs/i18n', '@vite-pwa/nuxt', 'nuxt-auth-utils'],
+  // The page editor's toolbar (@github/markdown-toolbar-element) is browser
+  // custom elements, not Vue components.
+  vue: {
+    compilerOptions: {
+      isCustomElement: (tag) => tag === 'markdown-toolbar' || tag.startsWith('md-'),
+    },
+  },
   i18n: {
     baseUrl: 'https://handbook.sps-fekt.cz',
     defaultLocale: 'en',
@@ -115,14 +128,14 @@ export default defineNuxtConfig({
       navigateFallback: null,
       globPatterns: ['**/*.{js,css,png,svg,ico,webp,woff2}'],
       runtimeCaching: [{
-        // / (the installed app's start page) and /translations only redirect
-        // to the visitor's language (server/middleware/language.ts), and a
+        // / (the installed app's start page) only redirects to the visitor's
+        // language (server/middleware/language.ts), and a
         // redirect can't be kept for offline use. Offline, the worker
         // redirects instead: to the language last picked (the lang cookie,
         // where the browser lets the worker read it), else the browser's,
         // else the other one, whichever page is saved.
         // Runs in the service worker as written: only browser globals.
-        urlPattern: ({ sameOrigin, url, request }) => sameOrigin && request.mode === 'navigate' && ['/', '/translations'].includes(url.pathname),
+        urlPattern: ({ sameOrigin, url, request }) => sameOrigin && request.mode === 'navigate' && url.pathname === '/',
         handler: async ({ request, url }) => {
           try {
             return await fetch(request)
@@ -139,7 +152,9 @@ export default defineNuxtConfig({
           }
         },
       }, {
-        urlPattern: ({ sameOrigin, url }) => sameOrigin && !url.pathname.startsWith('/api/assistant'),
+        // Not the assistant, the page editor (/cs/editor?file=…, it needs the network
+        // anyway) nor its API (the GitHub sign-in).
+        urlPattern: ({ sameOrigin, url }) => sameOrigin && !url.pathname.startsWith('/api/assistant') && !url.pathname.startsWith('/editor/') && !url.pathname.startsWith('/api/_auth') && !/^\/[a-z]{2}\/editor(\/|$)/.test(url.pathname),
         handler: 'NetworkFirst',
         options: { cacheName: 'pages', networkTimeoutSeconds: 5, matchOptions: { ignoreVary: true } },
       }],

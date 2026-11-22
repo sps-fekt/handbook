@@ -17,6 +17,14 @@ Each page starts with a `title` and `description`. They also appear in link prev
 
 ## Editing
 
+### In the browser
+
+Every page has an **Upravit v editoru** (Edit this page) link next to **Edit on GitHub**. It opens the page's Markdown beside a live preview (`/cs/editor?file=cs/…`: the file's path in `content/`). Sign in with GitHub, edit, and press **Navrhnout změnu** (Propose change): that opens a pull request against `main`, from your own fork when you can't write to the repository (the editor creates it for you). The change goes live once the pull request is merged.
+
+To run the editor locally, create an OAuth app of your own (callback `http://localhost:3000/editor/login`) and start `npm run dev` with `NUXT_OAUTH_GITHUB_CLIENT_ID` and `NUXT_OAUTH_GITHUB_CLIENT_SECRET` set. Like the site, it edits the pages as they are on GitHub, and proposals open real pull requests.
+
+### Locally
+
 ```bash
 npm ci
 npm run dev        # http://localhost:3000
@@ -26,7 +34,7 @@ Make your change on a branch and open a pull request against `main`. Small fixes
 
 ## Rules
 
-- **Change Czech first.** Edit `content/cs/`. Then update `content/en/` under the same file name, or leave it for a translator. The page `/cs/translations` lists what needs translating.
+- **Change Czech first.** Edit `content/cs/`. Then update `content/en/` under the same file name, or leave it for a translator. The editor's list of files, `/cs/editor`, shows what needs translating, and opens a missing translation with the Czech text to translate.
 - **Typo fixes** that don't change the meaning: put `lunaria-ignore` (or `fix typo`) in the commit message, so the English page isn't marked as outdated.
 - **Don't rename published pages** without a good reason. Links to them are shared on Discord.
 

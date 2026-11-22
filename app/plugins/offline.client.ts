@@ -29,7 +29,6 @@ export default defineNuxtPlugin(() => {
       const urls = [
         // The page, for opening it directly, and its content, for moving to it from another page.
         ...[...pagePaths(navigation)].flatMap((path) => [path, `/api/content/get${path}`]),
-        '/api/translations',
         // The search index the search box loads for this content commit (comark-docs useSearch).
         ...(sha ? [`/api/content/blob/${sha}/snapshot/default.json`, `/api/content/blob/${sha}/manifest.json`] : []),
       ]

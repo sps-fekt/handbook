@@ -4,7 +4,7 @@ Freshman handbook (Příručka prváka) of Studenti pro studenty, built on the [
 
 - **Czech and English.** Czech is the source language. The English version has the same file names.
 - **Pages served from GitHub.** In production the site reads the Markdown from this repository when a page is requested, so it isn't bundled into the build.
-- **Translation tracking** with [Lunaria](https://lunaria.dev). The page `/cs/translations` lists English pages that are missing or older than their Czech source. The server runs Lunaria itself, so it's current without a rebuild.
+- **Translation tracking** with [Lunaria](https://lunaria.dev). The editor's list of files, `/cs/editor`, shows English pages that are missing or older than their Czech source. The server runs Lunaria itself, so it's current without a rebuild.
 - **Installable as an app** and readable offline (PWA).
 
 ## Contents
@@ -15,7 +15,7 @@ Freshman handbook (Příručka prváka) of Studenti pro studenty, built on the [
 | `public/` | Images, icons and other static files |
 | `site.ts` | Site name, description and brand colour |
 | `nuxt.config.ts` | The layer, languages, redirects from old URLs, the PWA |
-| `app/` | Replacements for the layer's components (header, footer, language switch, search), the translations page, styles |
+| `app/` | Replacements for the layer's components (header, footer, language switch, search), the page editor and its list of files, styles |
 | `server/middleware/language.ts` | Sends `/` to the visitor's language |
 | `i18n/locales/` | Texts of the interface in Czech and English |
 | `lunaria.config.ts` | Translation tracking |
@@ -74,5 +74,13 @@ To watch a deploy: `journalctl --user -fu handbook-deploy.service`. To deploy by
 
    In the repository settings → Webhooks → Add webhook: payload URL `https://handbook.sps-fekt.cz/api/webhook`, content type `application/json`, the secret printed above, **Just the push event**. GitHub's first delivery (a ping) should answer 200.
 
-4. Check `config/handbook.env` (site URL, repository).
-5. Run `~/repo/deploy/deploy.sh`. The first run builds the image, installs everything and starts the site.
+4. Create the GitHub OAuth app the content editor (`/cs/editor?file=…`) signs in with: the `sps-fekt` organization settings → Developer settings → OAuth Apps → New OAuth App, homepage `https://handbook.sps-fekt.cz`, authorization callback URL `https://handbook.sps-fekt.cz/editor/login`. Put its client ID in `config/handbook.env` (`NUXT_OAUTH_GITHUB_CLIENT_ID`), and store a client secret generated there:
+
+   ```bash
+   printf '%s' '…' | podman secret create handbook-cms-oauth-secret -
+   ```
+
+   The site doesn't start without this secret (the Quadlet asks for it).
+
+5. Check `config/handbook.env` (site URL, repository).
+6. Run `~/repo/deploy/deploy.sh`. The first run builds the image, installs everything and starts the site.

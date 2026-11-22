@@ -37,23 +37,6 @@ const version = computed(() => deployed.value?.commit?.slice(0, 7))
     </template>
 
     <template #right>
-      <!-- Nuxt UI adds the language prefix: /cs/translations or /en/translations. -->
-      <ULink
-        to="/translations"
-        class="flex items-center gap-2 text-sm text-muted hover:text-highlighted"
-      >
-        <UIcon
-          name="i-lucide-list-checks"
-          class="size-4 shrink-0"
-        />
-        <span class="leading-none whitespace-nowrap">{{ t('translations.title') }}</span>
-      </ULink>
-
-      <USeparator
-        orientation="vertical"
-        class="h-4 max-sm:hidden"
-      />
-
       <div class="flex items-center gap-2.5">
         <ULink
           :to="repoUrl"
@@ -75,6 +58,24 @@ const version = computed(() => deployed.value?.commit?.slice(0, 7))
           {{ version }}
         </ULink>
       </div>
+
+      <USeparator
+        orientation="vertical"
+        class="h-4 max-sm:hidden"
+      />
+
+      <!-- The editor's list of files, with the translation status. Nuxt UI adds
+           the language prefix: /cs/editor or /en/editor. -->
+      <ULink
+        to="/editor"
+        class="flex items-center gap-2 text-sm text-muted hover:text-highlighted"
+      >
+        <UIcon
+          name="i-lucide-square-pen"
+          class="size-4 shrink-0"
+        />
+        <span class="leading-none whitespace-nowrap">{{ t('editor.title') }}</span>
+      </ULink>
     </template>
   </UFooter>
 </template>

@@ -20,7 +20,9 @@ const isEnglish = computed(() => lang.value === 'en')
 const paths = computed(() => pagePaths(navigation.value ?? []))
 
 // The page's path in the given language, or undefined if there's no such page.
+// The editor (/cs/editor?file=…) keeps its file: that's not in a language of its own.
 function counterpart(lang: 'cs' | 'en') {
+  if (/^\/(cs|en)\/editor$/.test(route.path)) return route.fullPath.replace(/^\/(cs|en)/, `/${lang}`)
   const target = route.path.replace(/^\/(cs|en)(?=\/|$)/, `/${lang}`)
   return paths.value.has(target) ? target : undefined
 }
