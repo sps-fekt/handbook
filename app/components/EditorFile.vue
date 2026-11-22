@@ -38,8 +38,8 @@ watch(data, (page) => {
   source.value = draft?.source ?? page.content
   sha.value = draft?.sha ?? page.sha
   summary.value = draft?.summary ?? ''
-  // Back from signing in: straight on to proposing.
-  if (draft && loggedIn.value) submitting.value = true
+  // Back from signing in with changes: straight on to proposing them.
+  if (draft && loggedIn.value && draft.source !== page.content) submitting.value = true
 }, { immediate: true })
 const changed = computed(() => !!data.value && source.value !== data.value.content)
 const proposeHint = computed(() => (pull.value ? t('editor.sentShort') : changed.value ? t('editor.propose') : t('editor.noChanges')))
@@ -339,7 +339,7 @@ useEventListener('beforeunload', (event: BeforeUnloadEvent) => {
               <md-unordered-list class="hidden" />
               <md-ordered-list class="hidden" />
             </markdown-toolbar>
-            <!-- At the foot: back to the page, the account, and last proposing the change. -->
+            <!-- At the foot: back to the page, proposing the change, and last the account. -->
             <div class="flex flex-col gap-0.5">
               <UButton
                 :to="pageUrl"
@@ -350,18 +350,6 @@ useEventListener('beforeunload', (event: BeforeUnloadEvent) => {
                 variant="ghost"
                 class="size-8 justify-center text-muted"
               />
-              <UDropdownMenu :items="accountItems" :content="{ side: 'right', align: 'end' }">
-                <UButton
-                  :aria-label="t('editor.account')"
-                  :title="loggedIn ? `@${user?.login}` : t('editor.account')"
-                  color="neutral"
-                  variant="ghost"
-                  class="size-8 justify-center p-0 text-muted"
-                >
-                  <UAvatar v-if="loggedIn" :src="user?.avatar" :alt="user?.login" size="xs" />
-                  <UIcon v-else name="i-lucide-circle-user-round" class="size-5" />
-                </UButton>
-              </UDropdownMenu>
               <!-- Grey and disabled until something changed, and the tooltip
                    says why: on a wrapper, as a disabled button gets no hover. -->
               <UTooltip :text="proposeHint" :content="{ side: 'right' }">
@@ -377,6 +365,18 @@ useEventListener('beforeunload', (event: BeforeUnloadEvent) => {
                   />
                 </span>
               </UTooltip>
+              <UDropdownMenu :items="accountItems" :content="{ side: 'right', align: 'end' }">
+                <UButton
+                  :aria-label="t('editor.account')"
+                  :title="loggedIn ? `@${user?.login}` : t('editor.account')"
+                  color="neutral"
+                  variant="ghost"
+                  class="size-8 justify-center p-0 text-muted"
+                >
+                  <UAvatar v-if="loggedIn" :src="user?.avatar" :alt="user?.login" size="xs" />
+                  <UIcon v-else name="i-lucide-circle-user-round" class="size-5" />
+                </UButton>
+              </UDropdownMenu>
             </div>
           </div>
           <UTextarea
@@ -437,7 +437,7 @@ useEventListener('beforeunload', (event: BeforeUnloadEvent) => {
                 <UButton type="submit" :label="t('editor.signIn')" />
               </template>
               <template v-else>
-                <span class="me-auto text-sm text-muted">@{{ user?.login }}</span>
+                <span class="me-auto" />
                 <UButton
                   type="submit"
                   icon="i-lucide-save"
