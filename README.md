@@ -55,29 +55,29 @@ To watch a deploy: `journalctl --user -fu handbook-deploy.service`. To deploy by
 1. Create a GitHub token the site reads the pages with: GitHub → Settings → Developer settings → Fine-grained tokens, resource owner `sps-fekt`, only the `handbook` repository, permission **Contents: Read-only**. Store it as a Podman secret:
 
    ```bash
-   printf '%s' 'github_pat_…' | podman secret create handbook-github-token -
+   printf '%s' 'github_pat_…' | podman secret create handbook-github-read-token -
    ```
 
    When the token expires, replace it (`podman secret rm`, then create it again) and restart the site: `systemctl --user restart handbook.service`.
 
-2. Create a random secret that signs the link preview images:
+2. Create a random key that signs the link preview images and seals the editor's sign-in cookie:
 
    ```bash
-   openssl rand -hex 32 | tr -d '\n' | podman secret create handbook-app-secret -
+   openssl rand -hex 32 | tr -d '\n' | podman secret create handbook-signing-key -
    ```
 
 3. Create the webhook secret, and the webhook on GitHub with the same value:
 
    ```bash
-   openssl rand -hex 32 | tr -d '\n' | tee /dev/stderr | podman secret create handbook-webhook-secret -
+   openssl rand -hex 32 | tr -d '\n' | tee /dev/stderr | podman secret create handbook-github-webhook-secret -
    ```
 
    In the repository settings → Webhooks → Add webhook: payload URL `https://handbook.sps-fekt.cz/api/webhook`, content type `application/json`, the secret printed above, **Just the push event**. GitHub's first delivery (a ping) should answer 200.
 
-4. Create the GitHub OAuth app the content editor (`/cs/editor?file=…`) signs in with: the `sps-fekt` organization settings → Developer settings → OAuth Apps → New OAuth App, homepage `https://handbook.sps-fekt.cz`, authorization callback URL `https://handbook.sps-fekt.cz/editor/login`. Put its client ID in `config/handbook.env` (`NUXT_OAUTH_GITHUB_CLIENT_ID`), and store a client secret generated there:
+4. Create the GitHub OAuth app the content editor (`/cs/editor?file=…`) signs in with: the `sps-fekt` organization settings → Developer settings → OAuth Apps → New OAuth App, homepage `https://handbook.sps-fekt.cz`, redirect URI `https://handbook.sps-fekt.cz/editor/login`, **Expire user access tokens** off (the editor doesn't refresh them). Put its client ID in `config/handbook.env` (`NUXT_OAUTH_GITHUB_CLIENT_ID`), and store a client secret generated there:
 
    ```bash
-   printf '%s' '…' | podman secret create handbook-cms-oauth-secret -
+   printf '%s' '…' | podman secret create handbook-github-oauth-client-secret -
    ```
 
    The site doesn't start without this secret (the Quadlet asks for it).
