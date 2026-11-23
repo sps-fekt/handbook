@@ -12,6 +12,7 @@ const uiLocale = computed(() => (locale.value === 'cs' ? cs : en))
 
 const content = useDocsContent()
 const route = useRoute()
+const editingFile = computed(() => /^\/[a-z]{2}\/editor\/?$/.test(route.path) && !!route.query.file)
 
 const { data: navigation } = await useAsyncData('navigation', () => content.value.client.navigation(), {
   watch: [() => content.value.routeBase],
@@ -100,7 +101,8 @@ defineShortcuts({
           </Suspense>
         </UMain>
 
-        <AppFooter />
+        <!-- Not under the editor's panes, which fill the window. -->
+        <AppFooter v-if="!editingFile" />
       </div>
 
       <ClientOnly>

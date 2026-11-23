@@ -191,8 +191,28 @@ const calloutOrder = Object.keys(calloutIcons)
 const components = computed(() => insertableComponents(file.value))
 // By their name in the editor's language; one without a translation by its own.
 const componentName = (name: string) => (te(`editor.components.${name}`) ? t(`editor.components.${name}`) : name)
+// What each component looks like or does; the callouts' are above.
+const componentIcons: Record<string, string> = {
+  'accordion': 'i-lucide-list-collapse',
+  'badge': 'i-lucide-tag',
+  'button': 'i-lucide-mouse-pointer-click',
+  'card': 'i-lucide-square',
+  'card-group': 'i-lucide-layout-grid',
+  'kbd': 'i-lucide-keyboard',
+  'steps': 'i-lucide-route',
+  'tabs': 'i-lucide-panels-top-left',
+  'landing-hero': 'i-lucide-panel-top',
+  'landing-hero-demo': 'i-lucide-monitor-play',
+  'landing-features': 'i-lucide-layout-list',
+  'landing-feature-card': 'i-lucide-sparkles',
+  'landing-faq': 'i-lucide-circle-help',
+  'landing-cta': 'i-lucide-megaphone',
+  'landing-stack': 'i-lucide-layers',
+  'landing-tabs': 'i-lucide-app-window',
+}
 const menuItem = ({ name, inline }: { name: string, inline: boolean }) => ({
   label: componentName(name),
+  icon: calloutIcons[name] ?? componentIcons[name] ?? 'i-lucide-puzzle',
   onSelect: () => afterMenu(() => insertComponent(name, inline)),
 })
 // Alphabetically, by the name shown.
@@ -200,7 +220,7 @@ const componentItems = computed(() => components.value.filter((component) => !co
   .sort((a, b) => a.label.localeCompare(b.label, locale.value)))
 const calloutItems = computed(() => components.value.filter((component) => component.callout)
   .sort((a, b) => calloutOrder.indexOf(a.name) - calloutOrder.indexOf(b.name))
-  .map((component) => ({ ...menuItem(component), icon: calloutIcons[component.name] })))
+  .map(menuItem))
 function insertComponent(name: string, inline: boolean) {
   const area = sourceArea.value?.textareaRef
   if (!area) return
@@ -271,7 +291,7 @@ useEventListener('beforeunload', (event: BeforeUnloadEvent) => {
 <template>
   <!-- On wide screens the editor fills the window under the site header: the
        panes take all the height the rows above them leave. -->
-  <div class="flex flex-col px-4 py-3 sm:px-6 lg:px-8 lg:h-[calc(100dvh-var(--ui-header-height))]">
+  <div class="flex flex-col px-2 py-2 lg:h-[calc(100dvh-var(--ui-header-height))]">
     <UAlert
       v-if="error"
       color="error"
@@ -283,7 +303,7 @@ useEventListener('beforeunload', (event: BeforeUnloadEvent) => {
     <template v-else-if="data">
       <!-- Side by side, each pane scrolls on its own (and with the other), the
            same height: all the window leaves. -->
-      <div class="grid min-h-0 flex-1 gap-x-6 gap-y-2 lg:grid-cols-2 lg:grid-rows-[minmax(0,1fr)]">
+      <div class="grid min-h-0 flex-1 gap-x-2 gap-y-2 lg:grid-cols-2 lg:grid-rows-[minmax(0,1fr)]">
         <!-- "Editor" is in the header, after the site title (AppHeaderBrand.vue),
              and on wide screens the file too, in its middle (AppHeader.vue):
              here it's then only for screen readers. -->

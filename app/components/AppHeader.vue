@@ -51,7 +51,7 @@ const modeItems = computed(() => modes.map((m) => ({
   <UHeader
     :to="prefixLink(header?.to || '/', content.routeBase)"
     :toggle="{ variant: 'outline', class: 'p-2 max-sm:ms-auto', ui: { leadingIcon: 'size-4' } }"
-    :ui="{ container: editorFile ? 'max-w-none' : '', left: ['max-sm:hidden', inEditor && 'lg:flex-1'], center: 'min-w-0', right: 'max-sm:flex-1 max-sm:justify-start' }"
+    :ui="{ left: ['max-sm:hidden', inEditor && 'lg:flex-1'], center: 'min-w-0', right: 'max-sm:flex-1 max-sm:justify-start' }"
   >
     <template #left>
       <AppHeaderBrand />

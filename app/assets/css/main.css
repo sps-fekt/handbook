@@ -1,7 +1,6 @@
-/* Brand blue #003DA5 as the accent color, on top of the layer's neutral
-   (Geist) theme. Dark mode uses a lighter shade, readable on black.
-   The selectors are a step more specific than the layer's :root and .dark,
-   so they win whatever order the stylesheets load in. */
+/* Brand blue #003DA5 as the accent color on the layer's neutral theme, lighter
+   in dark mode. A step more specific than the layer's :root and .dark, so it
+   wins whatever order the stylesheets load in. */
 :root:not(.dark) {
   --ui-primary: #003da5;
 }
@@ -11,17 +10,16 @@
 
 /* A hand over buttons, as over links (Tailwind 4 leaves the arrow). */
 @layer base {
-  button:not(:disabled),
-  [role="button"]:not(:disabled) {
+  :is(button, [role="button"]):not(:disabled) {
     cursor: pointer;
   }
 }
 
-/* ---- Homepage cover ----------------------------------------------------- */
+/* ---- Homepage cover (::landing-hero{.hero-cover}) ------------------------ */
 
-/* The cover photo behind the homepage (::landing-hero{.hero-cover}), tinted
-   brand blue, under a shade that keeps the text readable: dark in dark mode,
-   light in light mode. */
+/* The cover photo tinted brand blue, under a shade that keeps the text
+   readable. The page fills the window: navbar, the hero with its content
+   centred, the footer at the bottom. */
 body:has(.hero-cover) {
   --hero-shade: rgba(12, 22, 39, 0.55);
   background:
@@ -33,136 +31,129 @@ body:has(.hero-cover) {
       color-mix(in oklab, color-mix(in oklch, #003da5 42%, black) 55%, transparent) 100%
     ),
     url('/images/cover.webp') center / cover no-repeat;
-}
-html:not(.dark) body:has(.hero-cover) {
-  --hero-shade: color-mix(in oklab, var(--ui-bg) 55%, transparent);
-}
-/* The page is at least as tall as the window: navbar, the hero filling what's
-   left, its content centered, and the footer at the bottom. */
-body:has(.hero-cover) :is(div:has(> main), main, main > .comark-content) {
-  display: flex;
-  flex-direction: column;
-}
-body:has(.hero-cover) div:has(> main) {
-  min-height: 100svh;
-}
-body:has(.hero-cover) :is(main, main > .comark-content, .hero-cover) {
-  flex: 1;
-  min-height: 0; /* instead of the layer's one screen for main */
+
+  html:not(.dark) & {
+    --hero-shade: color-mix(in oklab, var(--ui-bg) 55%, transparent);
+  }
+  & :is(div:has(> main), main, main > .comark-content) {
+    display: flex;
+    flex-direction: column;
+  }
+  & div:has(> main) {
+    min-height: 100svh;
+  }
+  & :is(main, main > .comark-content, .hero-cover) {
+    flex: 1;
+    min-height: 0; /* instead of the layer's one screen for main */
+  }
+  /* Frosted glass over the photo. */
+  & :is(header[data-slot="root"], footer, .hero-cover h1) {
+    background: color-mix(in oklab, var(--ui-bg) 65%, transparent);
+    -webkit-backdrop-filter: blur(8px); /* Safari before 18 */
+    backdrop-filter: blur(8px);
+  }
 }
 .hero-cover {
   display: flex;
   align-items: center;
-}
 
-/* Frosted glass over the photo: the navbar, the footer and the title. */
-body:has(.hero-cover) :is(header[data-slot="root"], footer, .hero-cover h1) {
-  background: color-mix(in oklab, var(--ui-bg) 65%, transparent);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-}
-/* The title in capitals, in a box fitted around it; on phones one word per
-   line, the box as wide as the longest word. */
-.hero-cover h1 {
-  width: max-content;
-  max-width: 100%;
-  margin-inline: auto;
-  padding: 0.2em 0.5em;
-  border-radius: calc(var(--ui-radius) * 1.5);
-  font-size: 40px;
-  line-height: 1.4;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-@media (max-width: 639.98px) {
-  .hero-cover h1 {
+  /* The title in capitals in a box fitted around it; on phones one word per line. */
+  & h1 {
     width: min-content;
+    max-width: 100%;
+    margin-inline: auto;
+    padding: 0.2em 0.5em;
+    border-radius: calc(var(--ui-radius) * 1.5);
+    font-size: 40px;
+    line-height: 1.4;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    @media (min-width: 640px) {
+      width: max-content;
+    }
+  }
+  /* The subtitle is muted by default, too faint on the photo. */
+  & [data-slot="description"] {
+    color: var(--ui-text-highlighted);
   }
 }
-/* The subtitle is muted by default, too faint on the photo. */
-.hero-cover [data-slot="description"] {
-  color: var(--ui-text-highlighted);
-}
 
-/* ---- Tables --------------------------------------------------------------- */
+/* ---- Tables ---------------------------------------------------------------- */
 
-/* Markdown tables always have a header row; one left empty (as on the study
-   programmes page) is hidden, and the first row takes over its top border
-   and rounded corners. */
+/* A Markdown table's header row left empty is hidden; the first row takes
+   over its top border and rounded corners. */
 thead:not(:has(th:not(:empty))) {
   display: none;
-}
-thead:not(:has(th:not(:empty))) + tbody > tr:first-child > td {
-  border-top-width: 1px;
-}
-thead:not(:has(th:not(:empty))) + tbody > tr:first-child > td:first-child {
-  border-start-start-radius: calc(var(--ui-radius) * 1.5);
-}
-thead:not(:has(th:not(:empty))) + tbody > tr:first-child > td:last-child {
-  border-start-end-radius: calc(var(--ui-radius) * 1.5);
+
+  & + tbody > tr:first-child > td {
+    border-top-width: 1px;
+
+    &:first-child {
+      border-start-start-radius: calc(var(--ui-radius) * 1.5);
+    }
+    &:last-child {
+      border-start-end-radius: calc(var(--ui-radius) * 1.5);
+    }
+  }
 }
 
 /* ---- Images ---------------------------------------------------------------- */
 
-/* How an image is sized and placed (CONTRIBUTING.md, "Images").
-
-   Size, a share of the text's width: {.quarter} {.third} {.half}
-   {.two-thirds} {.three-quarters} (or a width in pixels, {width="200"},
-   mostly for logos). On its own line, a sized image is centred.
-
-   Beside the text, alone in its paragraph and put just before the text:
-   {.float} or {.float-right} on the right, {.float-left} on the left. Without
-   a size it is as wide as its width, at most half the text. Headings start
-   below it, lists keep their bullets clear of it, and the page's content ends
-   below it (not beside the previous/next page links).
-
-   All of this from 640px. On phones every image is full width, on its own line. */
+/* Image options (CONTRIBUTING.md, "Images"), from 640px; on phones every
+   image is full width on its own line.
+   - {.quarter} {.third} {.half} {.two-thirds} {.three-quarters}: that share
+     of the text's width, centred.
+   - {.float} or {.float-right}, {.float-left}: beside the text, the image
+     alone in its paragraph; without a size at most half the text. Headings
+     and lists keep clear of it, and the page's content ends below it. */
 @media (min-width: 640px) {
   .comark-content {
     display: flow-root;
-  }
 
-  /* The size, on the image and on a paragraph holding only that image. */
-  .comark-content :is(img.quarter, p:has(> img.quarter:only-child)) { --size: 25%; }
-  .comark-content :is(img.third, p:has(> img.third:only-child)) { --size: 33.333%; }
-  .comark-content :is(img.half, p:has(> img.half:only-child)) { --size: 50%; }
-  .comark-content :is(img.two-thirds, p:has(> img.two-thirds:only-child)) { --size: 66.667%; }
-  .comark-content :is(img.three-quarters, p:has(> img.three-quarters:only-child)) { --size: 75%; }
+    /* The size, on the image and on a paragraph holding only that image. */
+    & :is(img.quarter, p:has(> img.quarter:only-child)) { --size: 25%; }
+    & :is(img.third, p:has(> img.third:only-child)) { --size: 33.333%; }
+    & :is(img.half, p:has(> img.half:only-child)) { --size: 50%; }
+    & :is(img.two-thirds, p:has(> img.two-thirds:only-child)) { --size: 66.667%; }
+    & :is(img.three-quarters, p:has(> img.three-quarters:only-child)) { --size: 75%; }
 
-  .comark-content img:is(.quarter, .third, .half, .two-thirds, .three-quarters) {
-    display: block;
-    width: var(--size);
-    margin-inline: auto;
-  }
+    & img:is(.quarter, .third, .half, .two-thirds, .three-quarters) {
+      display: block;
+      width: var(--size);
+      margin-inline: auto;
+    }
 
-  .comark-content p:has(> img:is(.float, .float-right, .float-left):only-child) {
-    float: right;
-    max-width: 50%;
-    margin: 0.25rem 0 1rem 1.5rem;
-  }
-  .comark-content p:has(> img.float-left:only-child) {
-    float: left;
-    margin: 0.25rem 1.5rem 1rem 0;
-  }
-  /* A floating image with a size: the paragraph takes the size, the image fills it. */
-  .comark-content p:has(> img:is(.quarter, .third, .half, .two-thirds, .three-quarters):is(.float, .float-right, .float-left):only-child) {
-    width: var(--size);
-    max-width: none;
-  }
-  .comark-content p > img:is(.quarter, .third, .half, .two-thirds, .three-quarters):is(.float, .float-right, .float-left) {
-    width: 100%;
-  }
+    & p:has(> img:is(.float, .float-right, .float-left):only-child) {
+      float: right;
+      max-width: 50%;
+      margin: 0.25rem 0 1rem 1.5rem;
+    }
+    & p:has(> img.float-left:only-child) {
+      float: left;
+      margin: 0.25rem 1.5rem 1rem 0;
+    }
+    /* Floating with a size: the paragraph takes the size, the image fills it. */
+    & p:has(> img:is(.quarter, .third, .half, .two-thirds, .three-quarters):is(.float, .float-right, .float-left):only-child) {
+      width: var(--size);
+      max-width: none;
 
-  .comark-content :is(h2, h3) {
-    clear: both;
-  }
-  .comark-content :is(ul, ol) {
-    display: flow-root;
+      & > img {
+        width: 100%;
+      }
+    }
+
+    & :is(h2, h3) {
+      clear: both;
+    }
+    & :is(ul, ol) {
+      display: flow-root;
+    }
   }
 }
-/* The paragraph floats, never the image itself (Tailwind may generate its own
-   float-left and float-right from the Markdown it scans when building). */
+/* The paragraph floats, never the image (Tailwind may generate its own
+   float-left and float-right from the Markdown it scans). */
 .comark-content img:is(.float, .float-right, .float-left) {
   float: none;
 }

@@ -1,10 +1,15 @@
+import type { H3Event } from 'h3'
+
 // GitHub sign-in for the page editor (nuxt-auth-utils), with scope public_repo:
 // enough to fork the repository, push a branch and open a pull request. The
 // token stays server-side (the session's secure part). ?return= is where the
 // editor goes back to; GitHub drops the query, so it waits in a cookie.
+// nuxt-auth-utils types its event as Nuxt's RequestEvent, h3's helpers take an
+// H3Event: the same object, typed two ways.
 const signIn = defineOAuthGitHubEventHandler({
   config: { scope: ['public_repo'] },
-  async onSuccess(event, { user, tokens }) {
+  async onSuccess(requestEvent, { user, tokens }) {
+    const event = requestEvent as unknown as H3Event
     await setUserSession(event, { user: { login: user.login, avatar: user.avatar_url }, secure: { token: tokens.access_token } })
     const back = getCookie(event, 'editor-return') ?? '/'
     deleteCookie(event, 'editor-return')
@@ -17,5 +22,5 @@ export default defineEventHandler((event) => {
   if (typeof back === 'string' && /^\/(?![/\\])/.test(back)) {
     setCookie(event, 'editor-return', back, { httpOnly: true, sameSite: 'lax', maxAge: 600 })
   }
-  return signIn(event)
+  return signIn(event as unknown as Parameters<typeof signIn>[0])
 })

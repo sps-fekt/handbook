@@ -1,7 +1,7 @@
 import { createLunaria } from '@lunariajs/core'
 import config from '../../lunaria.config'
 
-// Translation status for /cs/translations, from Lunaria (lunaria.config.ts).
+// Translation status for the editor's file list (/cs/editor), from Lunaria (lunaria.config.ts).
 // In production Lunaria keeps its own clone of the repository in /tmp and
 // pulls it on every run, so a content push needs no rebuild; in development
 // it reads the local repository. Rerun on every push (server/api/webhook.post.ts)
@@ -23,7 +23,7 @@ async function run() {
       : { ...config, external: true, cacheDir: '/tmp/lunaria/cache', cloneDir: '/tmp/lunaria/history' },
   })
   // Only what the page shows: no file contents, and no commit authors (their emails).
-  const commit = ({ hash, date, message }: { hash: string, date: string, message: string }) => ({ hash, date, message })
+  const commit = ({ hash, date, message }: { hash: string, date: Date, message: string }) => ({ hash, date, message })
   return (await lunaria.getFullStatus()).map(({ source, localizations }) => ({
     source: { path: source.path, git: { latestTrackedCommit: commit(source.git.latestTrackedCommit) } },
     localizations: localizations.map((localization) => ({
