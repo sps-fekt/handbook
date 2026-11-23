@@ -271,7 +271,7 @@ useEventListener('beforeunload', (event: BeforeUnloadEvent) => {
 <template>
   <!-- On wide screens the editor fills the window under the site header: the
        panes take all the height the rows above them leave. -->
-  <UContainer class="flex flex-col py-3 lg:h-[calc(100dvh-var(--ui-header-height))]">
+  <div class="flex flex-col px-4 py-3 sm:px-6 lg:px-8 lg:h-[calc(100dvh-var(--ui-header-height))]">
     <UAlert
       v-if="error"
       color="error"
@@ -450,5 +450,5 @@ useEventListener('beforeunload', (event: BeforeUnloadEvent) => {
         </template>
       </UModal>
     </template>
-  </UContainer>
+  </div>
 </template>
